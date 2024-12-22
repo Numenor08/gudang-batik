@@ -1,8 +1,6 @@
-import * as React from "react"
-import { TrendingUp, RefreshCw } from "lucide-react"
-import { Label, Pie, PieChart } from "recharts"
-import { Button } from "@/components/ui/button"
-
+import { RefreshCw } from "lucide-react";
+import { Label, Pie, PieChart } from "recharts";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -10,65 +8,78 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/components/ui/chart"
-
-const dataStockDistribution = [
-    { name: "Motif Parang", stock: 350, fill: "var(--color-parang)" },
-    { name: "Motif Kawung", stock: 250, fill: "var(--color-kawung)" },
-    { name: "Motif Mega Mendung", stock: 150, fill: "var(--color-megamendung)" },
-    { name: "Motif Sekar Jagad", stock: 100, fill: "var(--color-sekarjagad" },
-    { name: "Motif Lainnya", stock: 400, fill: "var(--color-other)" },
-];
+} from "@/components/ui/chart";
+import useSWR from "swr";
 
 const chartConfig = {
-    parang: {
-        label: "MotifParang",
-        color: "hsl(var(--chart-1))",
+    1: {
+        color: "var(--chart-1)",
     },
-    kawung: {
-        label: "MotifKawung",
-        color: "hsl(var(--chart-2))",
+    2: {
+        color: "var(--chart-2)",
     },
-    megamendung: {
-        label: "MotifMega Mendung",
-        color: "hsl(var(--chart-3))",
+    3: {
+        color: "var(--chart-3)",
     },
-    sekarjagad: {
-        label: "MotifSekar Jagad",
-        color: "hsl(var(--chart-4))",
+    4: {
+        color: "var(--chart-4)",
+    },
+    5: {
+        color: "var(--chart-5)",
     },
     other: {
-        label: "MotifLainnya",
-        color: "hsl(var(--chart-5))",
+        color: "var(--chart-other))",
     },
+};
+
+function AddFillToData(data) {
+    for (let i = 0; i < data.length; i++) {
+        if (i === data.length - 1) {
+            data[i].fill = `var(--chart-other)`;
+            break;
+        }
+        data[i].fill = `var(--chart-${i + 1})`;
+    }
 }
 
-export function ChartPie() {
-    const totalStock = React.useMemo(() => {
-        return dataStockDistribution.reduce((acc, curr) => acc + curr.stock, 0)
-    }, [])
+function ChartPie() {
+    const { data: totalStock, mutate: mutateTotalStock } = useSWR(`/api/batik/total-stock`);
+    const { data: stockDistribution, mutate: mutateStockDistribution } = useSWR(`/api/batik/top`);
+
+    AddFillToData(stockDistribution);
+    const currentDate = new Date().toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+    });
+
+    const handleRefresh = () => {
+        mutateTotalStock();
+        mutateStockDistribution();
+    };
 
     return (
-        <Card className="flex flex-col h-full relative">
+        <Card className="h-full flex flex-col items-center justify-between relative">
             <Button
                 className="absolute w-8 h-8 top-0 right-0 rounded-l-none rounded-b-none"
                 color="primary"
+                onClick={handleRefresh}
             >
                 <RefreshCw color="#FFFFFF" />
             </Button>
             <CardHeader className="items-center pb-0">
                 <CardTitle>Batik Stock Distribution</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
+                <CardDescription>{currentDate}</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 pb-0">
+            <CardContent>
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
+                    className="mx-auto aspect-square min-w-[250px] min-h-[250px]"
                 >
                     <PieChart>
                         <ChartTooltip
@@ -76,7 +87,7 @@ export function ChartPie() {
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Pie
-                            data={dataStockDistribution}
+                            data={stockDistribution}
                             dataKey="stock"
                             nameKey="name"
                             innerRadius={60}
@@ -97,7 +108,7 @@ export function ChartPie() {
                                                     y={viewBox.cy}
                                                     className="fill-foreground text-3xl font-bold"
                                                 >
-                                                    {totalStock.toLocaleString()}
+                                                    {totalStock.total_stock}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
@@ -107,7 +118,7 @@ export function ChartPie() {
                                                     Stock
                                                 </tspan>
                                             </text>
-                                        )
+                                        );
                                     }
                                 }}
                             />
@@ -115,14 +126,16 @@ export function ChartPie() {
                     </PieChart>
                 </ChartContainer>
             </CardContent>
-            <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
+            <CardFooter>
+                {/* <div className="flex items-center gap-2 font-medium leading-none">
                     Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-                </div>
+                </div> */}
                 <div className="leading-none text-muted-foreground">
-                    Showing total stock for the last 6 months
+                    Showing total stock distribution on this day
                 </div>
             </CardFooter>
         </Card>
-    )
+    );
 }
+
+export { ChartPie };

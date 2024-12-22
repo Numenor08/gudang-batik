@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
     flexRender,
     getCoreRowModel,
@@ -17,7 +17,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-function DataTable({ columns, data }) {
+function DataTable({ columns, data, onEdit, onDelete, className }) {
     const [sorting, setSorting] = useState([]);
     const table = useReactTable({
         data,
@@ -29,38 +29,50 @@ function DataTable({ columns, data }) {
         state: {
             sorting,
         },
+        initialState: {
+            pagination: {
+                pageSize: 10,
+            },
+        },
+        meta: {
+            onEdit,
+            onDelete,
+        },
     });
 
+    const currentPage = table.getState().pagination.pageIndex + 1;
+    const totalPages = table.getPageCount();
+
     return (
-        <Card>
+        <Card className={className}>
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
+                        <TableRow>
+                            <TableHead className="pl-5 text-center">No</TableHead>
+                            {table.getHeaderGroups().map((headerGroup) =>
+                                headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))
+                            )}
+                        </TableRow>
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
+                            table.getRowModel().rows.map((row, index) => (
                                 <TableRow
                                     className="hover:bg-gray-100"
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
                                 >
+                                    <TableCell className="pl-6">{index + 1}</TableCell>
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell className="pl-6" key={cell.id}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -70,7 +82,7 @@ function DataTable({ columns, data }) {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell colSpan={columns.length + 1} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>
@@ -80,8 +92,7 @@ function DataTable({ columns, data }) {
             </div>
             <div className="flex items-center justify-end space-x-2 py-4 px-4 h-12">
                 <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                    Page {currentPage} of {totalPages}
                 </div>
                 <div className="space-x-2">
                     <Button

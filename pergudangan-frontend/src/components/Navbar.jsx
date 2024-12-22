@@ -1,5 +1,4 @@
-import { ChevronDown, Bell, Search } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Bell, Search } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,10 +11,13 @@ import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import DropdownUser from "@/components/DropdownUser"
 
 function Navbar({ children }) {
+  
+
   return (
-    <div className="border-b text-white flex items-center justify-between p-2 pr-4 gap-4">
+    <div className="border-b text-white flex items-center justify-between w-full p-2 pr-4 gap-4">
       <div className="flex items-center gap-2">
         {children}
         <Separator orientation="vertical" className="h-6"/>
@@ -47,28 +49,7 @@ function Navbar({ children }) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <DropdownMenu className="border-collapse">
-          <DropdownMenuTrigger className="flex items-center gap-1  hover:bg-neutral-100 text-black rounded-full border-none p-1">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>AA</AvatarFallback>
-            </Avatar>
-            <ChevronDown />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link to="/dashboard/profile">Profile</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link to="/dashboard/setting">Setting</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link to="/logout">logout</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <DropdownUser></DropdownUser>
       </div>
     </div>
   )

@@ -12,9 +12,12 @@ import MyBreadCrumb from "@/components/MyBreadCrumb";
 import { RefreshCw } from "lucide-react";
 import { ChartArea } from "@/components/ChartsArea";
 import { ChartPie } from "@components/ChartsPie";
-import {DataTableBatik, DataTableTransaction} from "@/components/MyDataTables";
+import { DataTableBatik, DataTableTransaction } from "@/components/MyDataTables";
 import { UrlContext, useUrl } from '@/hooks/UrlProvider';
 import { useEffect } from "react";
+import { Suspense } from "react";
+import { SkeletonChartPie, SkeletonChartArea, SkeletonTable } from "@skeleton/MySkeleton";
+import useSWR from "swr";
 
 const KpiCard = ({ label, data }) => {
     return (
@@ -30,11 +33,21 @@ const KpiCard = ({ label, data }) => {
 };
 
 const CardStatistic = () => {
+    const { data: transactionToday } = useSWR("/api/transactions/today");
+    const { data: mostActiveDistributor } = useSWR("/api/distributors/most-active");
+    const { data: mostActiveSupplier } = useSWR("/api/suppliers/most-active");
+    const { data: mostMotif } = useSWR("/api/batik/most-stock");
+
+    const transactionTodayMessage = `Ada ${transactionToday?.transaction} transaksi hari ini`;
+    const mostActiveDistributorMessage = `${mostActiveDistributor?.name} (${mostActiveDistributor?.transaction} transaksi)`;
+    const mostActiveSupplierMessage = `${mostActiveSupplier?.name} (${mostActiveSupplier.transaction} transaksi)`;
+    const mostMotifMessage = `${mostMotif?.name} (${mostMotif?.total_stock} pcs)`;
+
     return (
-        <Card className="relative">
+        <Card className="h-full flex flex-col justify-around relative">
             <CardHeader>
                 <CardTitle>Some Recent Fact</CardTitle>
-                <CardDescription>Lorem Ipsum</CardDescription>
+                <CardDescription>Showing 4 recent fact about your storage</CardDescription>
             </CardHeader>
             <Button
                 className="absolute w-8 h-8 top-0 right-0 rounded-l-none rounded-b-none"
@@ -43,10 +56,10 @@ const CardStatistic = () => {
                 <RefreshCw color="#FFFFFF" />
             </Button>
             <CardContent className="grid grid-cols-2 gap-4">
-                <KpiCard label="Total Stok Batik" data="1,250 kain batik" />
-                <KpiCard label="Motif Terbanyak" data="Motif Parang (350 pcs)" />
-                <KpiCard label="Stok Hampir Habis" data="8 jenis produk" />
-                <KpiCard label="Transaksi Hari Ini" data="15 transaksi" />
+                <KpiCard label="Transaksi Hari Ini" data={transactionTodayMessage} />
+                <KpiCard label="Motif Terbanyak" data={mostMotifMessage} />
+                <KpiCard label="Distributor Teraktif" data={mostActiveDistributorMessage} />
+                <KpiCard label="Supplier Teraktif" data={mostActiveSupplierMessage} />
             </CardContent>
             <CardFooter></CardFooter>
         </Card>
@@ -65,23 +78,33 @@ function Item() {
                 items={[{ type: "page", path: urlHere, label: "Dashboard" }]}
             />
             <div className="m-8 flex flex-col gap-8">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
-                        <CardStatistic />
+                <div className="flex-1 flex flex-col cs:flex-row gap-4 flex-wrap">
+                    <div className="flex-1 min-w-80">
+                        <Suspense fallback={<SkeletonChartArea />}>
+                            <CardStatistic />
+                        </Suspense>
+                    </div>
+                    <div className="flex-1 min-w-80">
+                        <Suspense fallback={<SkeletonChartArea />}>
+                            <ChartArea />
+                        </Suspense>
                     </div>
                     <div className="flex-1">
-                        <ChartArea />
-                    </div>
-                    <div className="flex-1">
-                        <ChartPie />
+                        <Suspense fallback={<SkeletonChartPie />}>
+                            <ChartPie />
+                        </Suspense>
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
-                        <DataTableBatik />
+                <div className="flex-1 flex flex-col cs:flex-row items-start flex-wrap gap-4">
+                    <div className="flex-1 container py-10">
+                        <Suspense fallback={<SkeletonTable className="h-full w-full" />}>
+                            <DataTableBatik />
+                        </Suspense>
                     </div>
-                    <div className="flex-1">
-                        <DataTableTransaction />
+                    <div className="flex-1 container py-10">
+                        <Suspense fallback={<SkeletonTable className="h-full w-full" />}>
+                            <DataTableTransaction />
+                        </Suspense>
                     </div>
                 </div>
             </div>
