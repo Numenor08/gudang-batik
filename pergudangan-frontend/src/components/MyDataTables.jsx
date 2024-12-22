@@ -2,17 +2,17 @@ import DataTable from "@/components/DataTable";
 import { batik, transaction, batikColumns, categoryColumns, supplierColumns, userColumns, transaction2 } from "@/components/Columns";
 import useSWR from 'swr';
 
-export function DataTableBatik() {
+export function DataTableBatik({className}) {
     const { data: batikData, error } = useSWR(`/api/batik`);
 
     if (error) return <div>Error loading data: {error.message}</div>;
 
     return (
-        <DataTable columns={batik} data={batikData} />
+        <DataTable className={className} columns={batik} data={batikData} />
     );
 }
 
-export function DataTableTransaction() {
+export function DataTableTransaction({className}) {
     const { data: transactionData, error } = useSWR(`/api/transactions`);
     const formattedTransactionData = transactionData?.map(transaction => ({
         ...transaction,
@@ -22,7 +22,7 @@ export function DataTableTransaction() {
     if (error) return <div>Error loading data: {error.message}</div>;
 
     return (
-        <DataTable className="container" columns={transaction} data={formattedTransactionData} />
+        <DataTable className={className} columns={transaction} data={formattedTransactionData} />
     );
 }
 

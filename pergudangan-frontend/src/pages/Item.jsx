@@ -37,11 +37,20 @@ const CardStatistic = () => {
     const { data: mostActiveDistributor } = useSWR("/api/distributors/most-active");
     const { data: mostActiveSupplier } = useSWR("/api/suppliers/most-active");
     const { data: mostMotif } = useSWR("/api/batik/most-stock");
+    const tagClass = 'inline-block bg-zinc-700 text-white text-xs px-2 rounded-md font-mono uppercase font-bold'
 
-    const transactionTodayMessage = `Ada ${transactionToday?.transaction} transaksi hari ini`;
-    const mostActiveDistributorMessage = `${mostActiveDistributor?.name} (${mostActiveDistributor?.transaction} transaksi)`;
-    const mostActiveSupplierMessage = `${mostActiveSupplier?.name} (${mostActiveSupplier.transaction} transaksi)`;
-    const mostMotifMessage = `${mostMotif?.name} (${mostMotif?.total_stock} pcs)`;
+    const transactionTodayMessage = (
+        <span>There are<span className={tagClass}>{transactionToday?.transaction}</span> trannsactions today</span>
+    );
+    const mostActiveDistributorMessage = (
+        <span><span className={tagClass}>{mostActiveDistributor?.name}</span> <br /> (<span className={tagClass}>{mostActiveDistributor?.transaction}</span> transaction)</span>
+    );
+    const mostActiveSupplierMessage = (
+        <span><span className={tagClass}>{mostActiveSupplier?.name}</span> <br /> (<span className={tagClass}>{mostActiveSupplier?.transaction}</span> transaction)</span>
+    );
+    const mostMotifMessage = (
+        <span><span className={tagClass}>{mostMotif?.name}</span> <br /> (<span className={tagClass}>{mostMotif?.total_stock}</span> pcs)</span>
+    );
 
     return (
         <Card className="h-full flex flex-col justify-around relative">
@@ -56,10 +65,10 @@ const CardStatistic = () => {
                 <RefreshCw color="#FFFFFF" />
             </Button>
             <CardContent className="grid grid-cols-2 gap-4">
-                <KpiCard label="Transaksi Hari Ini" data={transactionTodayMessage} />
-                <KpiCard label="Motif Terbanyak" data={mostMotifMessage} />
-                <KpiCard label="Distributor Teraktif" data={mostActiveDistributorMessage} />
-                <KpiCard label="Supplier Teraktif" data={mostActiveSupplierMessage} />
+                <KpiCard label="Today's Transactions" data={transactionTodayMessage} />
+                <KpiCard label="Most Motifs" data={mostMotifMessage} />
+                <KpiCard label="Most Active Distributor" data={mostActiveDistributorMessage} />
+                <KpiCard label="Most Active Supplier" data={mostActiveSupplierMessage} />
             </CardContent>
             <CardFooter></CardFooter>
         </Card>
@@ -95,15 +104,15 @@ function Item() {
                         </Suspense>
                     </div>
                 </div>
-                <div className="flex-1 flex flex-col cs:flex-row items-start flex-wrap gap-4">
-                    <div className="flex-1 container py-10">
-                        <Suspense fallback={<SkeletonTable className="h-full w-full" />}>
-                            <DataTableBatik />
+                <div className="grid grid-cols-1 cs:grid-cols-2 gap-6">
+                    <div className="my-4">
+                        <Suspense fallback={<SkeletonTable loopCol={4} className="h-full w-full" />}>
+                            <DataTableBatik className="w-full" />
                         </Suspense>
                     </div>
-                    <div className="flex-1 container py-10">
-                        <Suspense fallback={<SkeletonTable className="h-full w-full" />}>
-                            <DataTableTransaction />
+                    <div className="my-4">
+                        <Suspense fallback={<SkeletonTable loopCol={4} className="h-full w-full" />}>
+                            <DataTableTransaction className="w-full" />
                         </Suspense>
                     </div>
                 </div>

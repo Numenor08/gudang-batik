@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useUrl } from '@/hooks/UrlProvider';
 import { useAuth } from "@/hooks/AuthProvider";
 import {DataTableBatik2} from "@/components/MyDataTables";
 import {AddItemButton} from "@/components/AddItemButton";
 import axiosInstance from "@/utils/axiosInstance";
 import MyBreadCrumb from "@/components/MyBreadCrumb";
+import { SkeletonTable } from "@/components/skeleton/MySkeleton";
 
 function ManageItem({className}) {
     const urlHere = "/dashboard/management/item";
@@ -41,7 +42,9 @@ function ManageItem({className}) {
         <div className={className}>
             <div>
                 <AddItemButton />
-                <DataTableBatik2 onDelete={handleDelete} />
+                <Suspense fallback={<SkeletonTable loopRow={25} loopCol={8} height={8} className="h-full w-full" />}>
+                    <DataTableBatik2 onDelete={handleDelete} />
+                </Suspense>
             </div>
         </div>
         </>

@@ -57,19 +57,31 @@ function SkeletonChartArea() {
     );
 }
 
-function SkeletonTable() {
+function SkeletonTable({ className, loopRow = 10, loopCol = 5, height = 4 }) {
     return (
-        <Card className="p-4">
+        <Card className={"p-4 " + className}>
             <div className="space-y-2">
-                {[...Array(10)].map((_, index) => (
+                {[...Array(loopRow)].map((_, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                        <Skeleton className="w-6 h-4" />
-                        <Skeleton className="flex-1 h-4" />
-                        <Skeleton className="flex-1 h-4" />
-                        <Skeleton className="flex-1 h-4" />
-                        <Skeleton className="flex-1 h-4" />
+                        <Skeleton className={`w-8 h-${height}`} />
+                        {[...Array(loopCol)].map((_, index) => (
+                        <Skeleton key={index} className={`flex-1 h-${height}`} />
+                        ))}
                     </div>
                 ))}
+            </div>
+            <div className="my-4 flex flex-row items-center justify-between">
+                <div>
+                    <Skeleton className='w-20 h-6'></Skeleton>
+                </div>
+                <div className="flex flex-row gap-2">
+                    <div>
+                        <Skeleton className='w-[4.5rem] h-6'></Skeleton>
+                    </div>
+                    <div>
+                        <Skeleton className='w-14 h-6'></Skeleton>
+                    </div>
+                </div>
             </div>
         </Card>
     );

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
+import { SkeletonTable } from "@/components/skeleton/MySkeleton";
 
 const ManageCategory = ({ className }) => {
     const urlHere = "/dashboard/management/category";
@@ -60,7 +61,7 @@ const ManageCategory = ({ className }) => {
                             <AddCategoryForm />
                         </DialogContent>
                     </Dialog>
-                    <Suspense fallback={<div>Loading...</div>}>
+                    <Suspense fallback={<SkeletonTable loopRow={10} loopCol={3} height={8} className="h-full w-full" />}>
                         <DataTableCategory onEdit={handleEdit} onDelete={handleDelete} />
                     </Suspense>
                     {selectedCategory && (

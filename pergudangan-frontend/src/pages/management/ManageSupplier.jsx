@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
 import MyBreadCrumb from "@/components/MyBreadCrumb";
+import { SkeletonTable } from "@/components/skeleton/MySkeleton";
 
 function ManageSupplier({ className }) {
     const urlHere = "/dashboard/management/supplier";
@@ -60,7 +61,7 @@ function ManageSupplier({ className }) {
                         <AddSupplierDistriForm type="suppliers" />
                     </DialogContent>
                 </Dialog>
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<SkeletonTable loopCol={7} loopRow={10} height={8} />}>
                     <DataTableSupplier onEdit={handleEdit} onDelete={handleDelete} />
                 </Suspense>
                 {selectedSupplier && (

@@ -6,8 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
 import MyBreadCrumb from "@/components/MyBreadCrumb";
+import { SkeletonTable } from "@/components/skeleton/MySkeleton";
 
-function ManageUser({className}) {
+function ManageUser({ className }) {
     const urlHere = "/dashboard/management/user";
     const { setUrl } = useUrl();
     const [selectedUser, setSelectedUser] = useState(null);
@@ -44,7 +45,8 @@ function ManageUser({className}) {
                 { type: "page", path: urlHere, label: "User" }]}
         />
         <div className={className}>
-            <Suspense fallback={<div>Loading...</div>}>
+            <h1 className="text-3xl font-bold">User Management</h1>
+            <Suspense fallback={<SkeletonTable loopCol={5} loopRow={8} height={8} />}>
                 <DataTableUser onEdit={handleEdit} onDelete={handleDelete} />
             </Suspense>
             {selectedUser && (
