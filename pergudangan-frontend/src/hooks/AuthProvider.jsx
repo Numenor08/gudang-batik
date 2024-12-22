@@ -1,6 +1,6 @@
 import axiosInstance from "@/utils/axiosInstance";
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -36,8 +36,23 @@ const AuthProvider = ({ children }) => {
                 removeToken();
             }
         };
-        fetchAccessToken();
+
+        if (document.cookie.includes('refreshToken')) {
+            fetchAccessToken();
+        }
     }, [token, saveToken, removeToken]);
+
+    useEffect(() => {
+        if (token) {
+            try {
+                const decodedToken = jwtDecode(token);
+                setRole(decodedToken.data.role);
+            } catch (error) {
+                console.error('Failed to decode token:', error);
+                removeToken();
+            }
+        }
+    }, [token, removeToken]);
 
     const contextValue = useMemo(
         () => ({
