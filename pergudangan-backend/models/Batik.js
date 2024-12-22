@@ -60,7 +60,7 @@ class Batik {
             SELECT id, name, stock 
             FROM batik 
             ORDER BY stock DESC 
-            LIMIT 10
+            LIMIT 7
         `;
         db.query(query, (err, top5Results) => {
             if (err) {

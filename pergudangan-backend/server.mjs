@@ -23,7 +23,8 @@ const app = express();
 app.use(cors({
     origin: "*", // Ganti dengan URL frontend
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Authorization", "Content-Type"]
+    allowedHeaders: ["Authorization", "Content-Type"],
+    credentials: true
 }));
 
 // Middleware untuk mengatur batas ukuran payload

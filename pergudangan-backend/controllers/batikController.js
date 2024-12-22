@@ -38,7 +38,7 @@ export const getTotalStock = (req, res) => {
 export const getTopBatik = (req, res) => {
     Batik.getTopBatik((err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Error fetching top 5 batik', error: err });
+            return res.status(500).json({ message: 'Error fetching top 7 batik', error: err });
         }
         res.json(result);
     });
