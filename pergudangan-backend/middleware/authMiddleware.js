@@ -1,3 +1,4 @@
+// middleware/authMiddleware.js
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -15,7 +16,7 @@ export const verifyToken = (req, res, next) => {
             return res.status(500).json({ message: 'Failed to authenticate token' });
         }
 
-        req.user = decoded;
+        req.user = decoded.data;
         next();
     });
 };
