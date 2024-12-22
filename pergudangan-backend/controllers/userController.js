@@ -106,6 +106,29 @@ export const loginUser = (req, res) => {
     });
 };
 
+export const logoutUser = async (req, res) => {
+    console.log('logoutUser function called'); // Log awal fungsi
+
+    const { refreshToken } = req.cookies;
+    console.log('Refresh token from cookies:', refreshToken); // Log token dari cookies
+
+    if (!refreshToken) {
+        console.log('No refresh token provided'); // Log jika tidak ada token
+        return res.status(403).json({ message: 'No refresh token provided' });
+    }
+
+    try {
+        console.log('Deleting refresh token:', refreshToken); // Log sebelum menghapus token
+        await deleteRefreshToken(refreshToken);
+        console.log('Refresh token deleted successfully'); // Log setelah token dihapus
+        res.clearCookie('refreshToken');
+        res.json({ message: 'Logout successful' });
+    } catch (error) {
+        console.error('Error logging out:', error); // Log jika ada error
+        res.status(500).json({ message: 'Error logging out', error });
+    }
+};
+
 export const forgotPassword = (req, res) => {
     const { username, email, newPassword } = req.body;
 

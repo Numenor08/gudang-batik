@@ -1,50 +1,55 @@
-import axios from "axios";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import {jwtDecode} from "jwt-decode";
-import { useCallback } from "react";
+import axiosInstance from "@/utils/axiosInstance";
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [token, setToken_] = useState('');
+    const [token, setToken] = useState(localStorage.getItem('accessToken'));
     const [role, setRole] = useState(null);
-    const [img , setImg] = useState(null);
 
-    const setToken = useCallback((newToken) => {
-        setToken_(newToken);
-        if (newToken) {
-            // localStorage.setItem('token', newToken);
-            axios.defaults.headers.common["Authorization"] = "Bearer " + newToken;
-        } else {
-            // localStorage.removeItem('token');
-            delete axios.defaults.headers.common["Authorization"];
-        }
-    }, []);
-
-    useEffect(() => {
-        if (token) {
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-            const decodedToken = jwtDecode(token);
+    const saveToken = useCallback((accessToken) => {
+        setToken(accessToken);
+        if (accessToken) {
+            localStorage.setItem('accessToken', accessToken);
+            const decodedToken = jwtDecode(accessToken);
             setRole(decodedToken.data.role);
         } else {
             setRole(null);
         }
-    }, [token]);
+    }, []);
+
+    const removeToken = useCallback(() => {
+        setToken(null);
+        localStorage.removeItem('accessToken');
+        setRole(null);
+    }, []);
+
+    useEffect(() => {
+        const fetchAccessToken = async () => {
+            if (token) return;
+            try {
+                const { data } = await axiosInstance.post('/api/auth/refresh-token');
+                saveToken(data.accessToken);
+            } catch (error) {
+                console.error('Failed to refresh token:', error);
+                removeToken();
+            }
+        };
+        fetchAccessToken();
+    }, [token, saveToken, removeToken]);
 
     const contextValue = useMemo(
         () => ({
             token,
-            setToken,
+            saveToken,
             role,
-            img,
-            setImg
+            removeToken,
         }),
-        [token, role, img, setToken]
+        [token, role, saveToken, removeToken]
     );
 
-    return (
-        <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 const useAuth = () => {

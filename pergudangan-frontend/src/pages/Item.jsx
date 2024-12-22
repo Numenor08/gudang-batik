@@ -38,7 +38,7 @@ const CardStatistic = () => {
     const { data: mostActiveSupplier } = useSWR("/api/suppliers/most-active");
     const { data: mostMotif } = useSWR("/api/batik/most-stock");
     const tagClass = 'inline-block bg-zinc-700 text-white text-xs px-2 rounded-md font-mono uppercase font-bold'
-
+    
     const transactionTodayMessage = (
         <span>There are<span className={tagClass}>{transactionToday?.transaction}</span> trannsactions today</span>
     );
@@ -81,6 +81,7 @@ function Item() {
     useEffect(() => {
         setUrl(urlHere);
     }, [setUrl]);
+    console.log('Item jalan');
     return (
         <>
             <MyBreadCrumb

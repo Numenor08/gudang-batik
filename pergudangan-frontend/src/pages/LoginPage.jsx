@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
-    // CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -21,7 +20,8 @@ function LoginPage({ className, ...props }) {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const { setToken, setImg } = useAuth();
+    const { saveToken } = useAuth();
+
     const handleLogin = async (e) => {
         e.preventDefault();
         if (!username || !password) {
@@ -30,14 +30,14 @@ function LoginPage({ className, ...props }) {
         }
         setLoading(true);
         try {
-            const response = await axiosInstance.post(`/api/auth/login`, {
+            const response = await axiosInstance.post("/api/auth/login", {
                 username,
                 password,
             });
             const data = response.data;
             if (response.status === 200) {
-                setImg(data.user.img);
-                setToken(data.token);
+                saveToken(data.accessToken);
+                localStorage.setItem('userImg', data.user.img);
                 navigate('/dashboard');
             } else {
                 setErrorMessage(data.message || 'Login gagal, coba lagi.');
