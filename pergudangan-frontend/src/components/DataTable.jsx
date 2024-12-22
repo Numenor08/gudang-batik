@@ -49,7 +49,7 @@ function DataTable({ columns, data, onEdit, onDelete, className }) {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="pl-5 text-center">No</TableHead>
+                            <TableHead className="pl-5">No</TableHead>
                             {table.getHeaderGroups().map((headerGroup) =>
                                 headerGroup.headers.map((header) => (
                                     <TableHead key={header.id}>

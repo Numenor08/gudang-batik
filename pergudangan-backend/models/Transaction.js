@@ -8,12 +8,22 @@ class Transaction {
     }
 
     static getAll(callback) {
+        
         const query = `SELECT transactions.*, 
+
             COALESCE(suppliers.name, distributors.name) AS name, 
-            COALESCE(suppliers.contact_person, distributors.contact_person) AS contact_person 
+
+            COALESCE(suppliers.contact_person, distributors.contact_person) AS contact_person,
+
+            batik.name AS batik_name
+
         FROM transactions
+
         LEFT JOIN suppliers ON transactions.supplier_id = suppliers.id
-        LEFT JOIN distributors ON transactions.distributor_id = distributors.id`;
+
+        LEFT JOIN distributors ON transactions.distributor_id = distributors.id
+
+        LEFT JOIN batik ON transactions.batik_id = batik.id`;
 
         db.query(query, callback);
     }

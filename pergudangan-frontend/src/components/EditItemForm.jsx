@@ -80,11 +80,11 @@ function EditItemForm({ item, onClose }) {
             {errorMessage && <div className="text-red-500 mb-4 text-center">{errorMessage}</div>}
             <div className="grid gap-4">
                 <div>
-                    <Label htmlFor="name">Nama</Label>
+                    <Label htmlFor="name">Name</Label>
                     <Input id="name" value={name} onChange={(e) => startTransition(() => setName(e.target.value))} required />
                 </div>
                 <div>
-                    <Label htmlFor="category">Kategori</Label>
+                    <Label htmlFor="category">Category</Label>
                     <Select value={category} onValueChange={(value) => startTransition(() => setCategory(value))} required>
                         <SelectTrigger id="category">
                             <span>{category ? Categories.find(cat => cat.id === Number(category))?.name : "Pilih Kategori"}</span>
@@ -99,10 +99,10 @@ function EditItemForm({ item, onClose }) {
                     </Select>
                 </div>
                 <div>
-                    <Label htmlFor="color">Ukuran</Label>
+                    <Label htmlFor="color">Size</Label>
                     <Select id="color" value={size} onValueChange={(value) => startTransition(() => setSize(value))} required>
                         <SelectTrigger>
-                            <span>{size || "Pilih Warna"}</span>
+                            <span>{size || "Choose Size"}</span>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="S">
@@ -121,19 +121,19 @@ function EditItemForm({ item, onClose }) {
                     </Select>
                 </div>
                 <div>
-                    <Label htmlFor="size">Warna</Label>
+                    <Label htmlFor="size">Colour</Label>
                     <Input id="size" value={color} onChange={(e) => startTransition(() => setColor(e.target.value))} required />
                 </div>
                 <div>
-                    <Label htmlFor="stock">Stok</Label>
+                    <Label htmlFor="stock">Stock</Label>
                     <Input id="stock" type="number" value={stock} onChange={(e) => startTransition(() => setStock(e.target.value))} required />
                 </div>
                 <div>
-                    <Label htmlFor="min_stock">Stok Minimum</Label>
+                    <Label htmlFor="min_stock">Minimum Stock</Label>
                     <Input id="min_stock" type="number" value={minStock} onChange={(e) => startTransition(() => setMinStock(e.target.value))} required />
                 </div>
                 <div>
-                    <Label htmlFor="img">Gambar</Label>
+                    <Label htmlFor="img">Image</Label>
                     <Input id="img" type="file" accept="image/*" onChange={(e) => startTransition(() => setImg(e.target.files[0]))} />
                 </div>
                 <Button disable={loading.toString()} type="submit">Edit Barang</Button>

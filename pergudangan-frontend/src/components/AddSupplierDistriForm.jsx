@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
 
-function AddSupplierForm() {
+function AddSupplierDistriForm({type}) {
     const [name, setName] = useState('');
     const [contactPerson, setContactPerson] = useState('');
     const [phone, setPhone] = useState('');
@@ -31,7 +31,7 @@ function AddSupplierForm() {
             formData.append('img', img);
             console.log('formData:', ...formData);
 
-            const response = await axiosInstance.post('/api/suppliers', formData, {
+            const response = await axiosInstance.post(`/api/${type}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
@@ -59,15 +59,15 @@ function AddSupplierForm() {
             {errorMessage && <div className="text-red-500 mb-4 text-center">{errorMessage}</div>}
             <div className="grid gap-4">
                 <div>
-                    <Label htmlFor="name">Nama</Label>
+                    <Label htmlFor="name">Name</Label>
                     <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
                 <div>
-                    <Label htmlFor="contactPerson">Kontak</Label>
+                    <Label htmlFor="contactPerson">Contact Person</Label>
                     <Input id="contactPerson" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required />
                 </div>
                 <div>
-                    <Label htmlFor="phone">Nomor Telepon</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                 </div>
                 <div>
@@ -75,11 +75,11 @@ function AddSupplierForm() {
                     <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div>
-                    <Label htmlFor="address">Alamat</Label>
+                    <Label htmlFor="address">Address</Label>
                     <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
                 </div>
                 <div>
-                    <Label htmlFor="img">Gambar</Label>
+                    <Label htmlFor="img">Image</Label>
                     <Input id="img" type="file" accept="image/*" onChange={(e) => setImg(e.target.files[0])} required />
                 </div>
                 <Button disable={loading.toString()} type="submit">Tambah Supplier</Button>
@@ -88,4 +88,4 @@ function AddSupplierForm() {
     );
 }
 
-export default AddSupplierForm;
+export default AddSupplierDistriForm;

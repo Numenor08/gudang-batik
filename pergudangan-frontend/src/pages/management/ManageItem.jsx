@@ -4,8 +4,9 @@ import { useAuth } from "@/hooks/AuthProvider";
 import {DataTableBatik2} from "@/components/MyDataTables";
 import {AddItemButton} from "@/components/AddItemButton";
 import axiosInstance from "@/utils/axiosInstance";
+import MyBreadCrumb from "@/components/MyBreadCrumb";
 
-function ManageItem() {
+function ManageItem({className}) {
     const urlHere = "/dashboard/management/item";
     const { setUrl } = useUrl();
     const { token } = useAuth();
@@ -30,10 +31,20 @@ function ManageItem() {
     };
 
     return (
-        <div>
-            <AddItemButton />
-            <DataTableBatik2 onDelete={handleDelete} />
+        <>
+        <MyBreadCrumb
+            items={[
+                { type: "link", path: "/dashboard", label: "Dashboard" },
+                { type: "link", path: "", label: "Management" },
+                { type: "page", path: urlHere, label: "Item(Batik)" }]}
+        />
+        <div className={className}>
+            <div>
+                <AddItemButton />
+                <DataTableBatik2 onDelete={handleDelete} />
+            </div>
         </div>
+        </>
     );
 }
 

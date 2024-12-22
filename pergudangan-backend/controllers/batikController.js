@@ -63,7 +63,7 @@ export const createBatik = (req, res) => {
             return res.status(500).json({ message: 'Error creating batik', error: err });
         }
 
-        logActivity(req.user.id, `Created Batik with ID ${result.insertId}`);
+        logActivity(req.user.userId, `Created Batik with ID ${result.insertId}`);
         res.status(201).json({ message: 'Batik created successfully'});
     });
 };
@@ -72,8 +72,7 @@ export const updateBatik = (req, res) => {
     const batikId = req.params.id;
     const { name, color, size, stock, min_stock, category_id } = req.body;
     const img = req.file ? req.file.path : null;
-    const batikData = { name, color, size, stock, min_stock, img, category_id };
-
+    
     Batik.getById(batikId, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching batik data', error: err });
@@ -81,8 +80,14 @@ export const updateBatik = (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({ message: 'Batik not found' });
         }
-
+        
         const oldImgPath = result[0].img;
+        const batikData = { name, color, size, stock, min_stock, category_id };
+        if (img) {
+            updatedData.img = img;
+        } else {
+            updatedData.img = oldImgPath;
+        }
 
         Batik.update(batikId, batikData, (err, updateResult) => {
             if (err) {
@@ -99,11 +104,11 @@ export const updateBatik = (req, res) => {
                         return res.status(500).json({ message: 'Error deleting old batik image', error: unlinkErr });
                     }
 
-                    logActivity(req.user.id, `Updated Batik with ID ${batikId}`);
+                    logActivity(req.user.userId, `Updated Batik with ID ${batikId}`);
                     res.json({ message: 'Batik updated successfully' });
                 });
             } else {
-                logActivity(req.user.id, `Updated Batik with ID ${batikId}`);
+                logActivity(req.user.userId, `Updated Batik with ID ${batikId}`);
                 res.json({ message: 'Batik updated successfully' });
             }
         });
@@ -138,11 +143,11 @@ export const deleteBatik = (req, res) => {
                         return res.status(500).json({ message: 'Error deleting batik image', error: unlinkErr });
                     }
 
-                    logActivity(req.user.id, `Deleted Batik with ID ${batikId}`);
+                    logActivity(req.user.userId, `Deleted Batik with ID ${batikId}`);
                     res.json({ message: 'Batik deleted successfully' });
                 });
             } else {
-                logActivity(req.user.id, `Deleted Batik with ID ${batikId}`);
+                logActivity(req.user.userId, `Deleted Batik with ID ${batikId}`);
                 res.json({ message: 'Batik deleted successfully' });
             }
         });

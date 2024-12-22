@@ -26,7 +26,6 @@ const AuthProvider = ({ children }) => {
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
             const decodedToken = jwtDecode(token);
             setRole(decodedToken.data.role);
-            setRole("admin");
         } else {
             setRole(null);
         }

@@ -3,8 +3,7 @@ import { logActivity } from './logController.js';
 
 export const createTransaction = (req, res) => {
     const { batik_id, type, quantity, supplier_id, distributor_id } = req.body;
-    const user_id = req.user.id;
-
+    const user_id = req.user.userId;
     const transactionData = { batik_id, user_id, type, quantity, supplier_id, distributor_id };
 
     Transaction.create(transactionData, (err, result) => {
@@ -12,7 +11,7 @@ export const createTransaction = (req, res) => {
             return res.status(500).json({ message: 'Error creating transaction', error: err });
         }
 
-        logActivity(req.user.id, `Created Transaction with ID ${result.insertId}`);
+        logActivity(req.user.userId, `Created Transaction with ID ${result.insertId}`);
         res.status(201).json({ message: 'Transaction created successfully', transactionId: result.insertId });
     });
 };

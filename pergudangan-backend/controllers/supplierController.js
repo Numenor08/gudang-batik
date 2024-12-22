@@ -38,7 +38,7 @@ export const createSupplier = (req, res) => {
             return res.status(500).json({ message: 'Error creating supplier', error: err });
         }
 
-        logActivity(req.user.id, `Created Supplier with ID ${result.insertId}`);
+        logActivity(req.user.userId, `Created Supplier with ID ${result.insertId}`);
         res.status(201).json({ message: 'Supplier created successfully', supplierId: result.insertId });
     });
 };
@@ -46,19 +46,47 @@ export const createSupplier = (req, res) => {
 export const updateSupplier = (req, res) => {
     const supplierId = req.params.id;
     const { name, contact_person, phone, email, address } = req.body;
-    const img = req.file? req.file.path : null;
-    const supplierData = { name, contact_person, phone, email, address, img };
+    const img = req.file ? req.file.path : null;
 
-    Supplier.update(supplierId, supplierData, (err, result) => {
+    Supplier.getById(supplierId, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Error updating supplier', error: err });
+            return res.status(500).json({ message: 'Error fetching supplier data', error: err });
         }
-        if (result.affectedRows === 0) {
+        if (result.length === 0) {
             return res.status(404).json({ message: 'Supplier not found' });
         }
 
-        logActivity(req.user.id, `Updated Supplier with ID ${supplierId}`);
-        res.json({ message: 'Supplier updated successfully' });
+        const oldImgPath = result[0].img;
+        const supplierData = { name, contact_person, phone, email, address };
+        if (img) {
+            supplierData.img = img;
+        } else {
+            supplierData.img = oldImgPath;
+        }
+
+        Supplier.update(supplierId, supplierData, (err, updateResult) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error updating supplier', error: err });
+            }
+            if (updateResult.affectedRows === 0) {
+                return res.status(404).json({ message: 'Supplier not found' });
+            }
+
+            if (img && oldImgPath) {
+                const fullPath = path.resolve(oldImgPath);
+                fs.unlink(fullPath, (unlinkErr) => {
+                    if (unlinkErr) {
+                        return res.status(500).json({ message: 'Error deleting old supplier image', error: unlinkErr });
+                    }
+
+                    logActivity(req.user.userId, `Updated Supplier with ID ${supplierId}`);
+                    res.json({ message: 'Supplier updated successfully' });
+                });
+            } else {
+                logActivity(req.user.userId, `Updated Supplier with ID ${supplierId}`);
+                res.json({ message: 'Supplier updated successfully' });
+            }
+        });
     });
 };
 
@@ -73,7 +101,7 @@ export const deleteSupplier = (req, res) => {
             return res.status(404).json({ message: 'Supplier not found' });
         }
 
-        logActivity(req.user.id, `Deleted Supplier with ID ${supplierId}`);
+        logActivity(req.user.userId, `Deleted Supplier with ID ${supplierId}`);
         res.json({ message: 'Supplier deleted successfully' });
     });
 };

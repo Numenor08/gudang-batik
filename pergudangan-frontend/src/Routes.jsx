@@ -2,16 +2,16 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Dashboard from "@/pages/Dashboard";
 import Item from "@/pages/Item";
-import Management from "@/pages/Management";
 import Transaction from "@/pages/Transaction";
 import Supplier from "@/pages/Supplier";
 import Report from "@/pages/Report";
 import Setting from "@/pages/Setting";
 import Profile from "@/pages/Profile";
 import ManageItem from "@management/ManageItem";
-import ManageTransaction from "@management/ManageTransaction";
+import ManageDistributor from "@management/ManageDistributor";
 import ManageSupplier from "@management/ManageSupplier";
 import ManageUser from "@management/ManageUser";
+import ManageCategory from "@management/ManageCategory";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@pages/RegisterPage";
 import { SWRConfig } from 'swr';
@@ -44,7 +44,7 @@ function AppRoutes() {
             value={{
                 fetcher: (url) => fetcher(url, token),
                 suspense: true,
-                refreshInterval: 10000,
+                refreshInterval: 5000,
             }}>
             <Router>
                 <Routes>
@@ -54,11 +54,12 @@ function AppRoutes() {
                     <Route element={<ProtectedRoute />}>
                         <Route path="/dashboard/*" element={<Dashboard />}>
                             <Route path="" element={<Item />} />
-                            <Route path="management/*" element={<Management />}>
-                                <Route path="item" element={<ManageItem />} />
-                                <Route path="transaction" element={<ManageTransaction />} />
-                                <Route path="supplier" element={<ManageSupplier />} />
-                                <Route path="user" element={<ManageUser />} />
+                            <Route path="management/*">
+                                <Route path="item" element={<ManageItem className="m-8 flex flex-col gap-8"/>} />
+                                <Route path="category" element={<ManageCategory className="m-8 flex flex-col gap-8"/>} />
+                                <Route path="distributor" element={<ManageDistributor className="m-8 flex flex-col gap-8"/>} />
+                                <Route path="supplier" element={<ManageSupplier className="m-8 flex flex-col gap-8"/>} />
+                                <Route path="user" element={<ManageUser className="m-8 flex flex-col gap-8"/>} />
                             </Route>
                             <Route path="transaction" element={<Transaction />} />
                             <Route path="supplier" element={<Supplier />} />

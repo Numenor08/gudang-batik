@@ -33,7 +33,7 @@ export const createCategory = (req, res) => {
             return res.status(500).json({ message: 'Error creating category', error: err });
         }
 
-        logActivity(req.user.id, `Created Category with ID ${result.insertId}`);
+        logActivity(req.user.userId, `Created Category with ID ${result.insertId}`);
         res.status(201).json({ message: 'Category created successfully' });
     });
 };
@@ -51,7 +51,7 @@ export const updateCategory = (req, res) => {
             return res.status(404).json({ message: 'Category not found' });
         }
 
-        logActivity(req.user.id, `Updated Category with ID ${categoryId}`);
+        logActivity(req.user.userId, `Updated Category with ID ${categoryId}`);
         res.json({ message: 'Category updated successfully' });
     });
 };
@@ -67,7 +67,7 @@ export const deleteCategory = (req, res) => {
             return res.status(404).json({ message: 'Category not found' });
         }
 
-        logActivity(req.user.id, `Deleted Category with ID ${categoryId}`);
+        logActivity(req.user.userId, `Deleted Category with ID ${categoryId}`);
         res.json({ message: 'Category deleted successfully' });
     });
 };

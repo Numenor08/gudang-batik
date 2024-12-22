@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
 
-function EditSupplierForm({ supplier, onClose }) {
+function EditSupplierDistriForm({ supplier, onClose, type }) {
     const [name, setName] = useState(supplier.name);
     const [contactPerson, setContactPerson] = useState(supplier.contact_person);
     const [phone, setPhone] = useState(supplier.phone);
@@ -28,7 +28,7 @@ function EditSupplierForm({ supplier, onClose }) {
                 email,
                 address,
             };
-            await axiosInstance.put(`/api/suppliers/${supplier.id}`, formData, {
+            await axiosInstance.put(`/api/${type}/${supplier.id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -50,15 +50,15 @@ function EditSupplierForm({ supplier, onClose }) {
             {errorMessage && <div className="text-red-500 mb-4 text-center">{errorMessage}</div>}
             <div className="grid gap-4">
                 <div>
-                    <Label htmlFor="name">Nama</Label>
+                    <Label htmlFor="name">Name</Label>
                     <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
                 <div>
-                    <Label htmlFor="contactPerson">Kontak</Label>
+                    <Label htmlFor="contactPerson">Contact Person</Label>
                     <Input id="contactPerson" value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} required />
                 </div>
                 <div>
-                    <Label htmlFor="phone">Nomor Telepon</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                 </div>
                 <div>
@@ -66,7 +66,7 @@ function EditSupplierForm({ supplier, onClose }) {
                     <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div>
-                    <Label htmlFor="address">Alamat</Label>
+                    <Label htmlFor="address">Address</Label>
                     <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
                 </div>
                 <Button disable={loading} type="submit">Edit Supplier</Button>
@@ -75,4 +75,4 @@ function EditSupplierForm({ supplier, onClose }) {
     );
 }
 
-export default EditSupplierForm;
+export default EditSupplierDistriForm;

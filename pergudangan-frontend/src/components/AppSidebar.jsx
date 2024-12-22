@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserRoundPen, PersonStanding, ArrowLeftRight, Shirt, ClipboardMinus, Package, BadgeDollarSign, LayoutDashboard, SquareChartGantt, Container, Settings, ChevronDown, ChevronUp } from "lucide-react";
+import { UserRoundPen, Truck, ChartBarStacked, Shirt, ClipboardMinus, Package, BadgeDollarSign, LayoutDashboard, SquareChartGantt, Container, Settings, ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
     Sidebar,
@@ -21,6 +21,7 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { useUrl } from '@/hooks/UrlProvider';
+import { useAuth } from "@/hooks/AuthProvider";
 
 // Menu items.
 const items = [
@@ -39,14 +40,19 @@ const items = [
                 icon: Shirt,
             },
             {
-                title: "Transaction",
-                url: "/dashboard/management/transaction",
-                icon: ArrowLeftRight,
+                title: "Category",
+                url: "/dashboard/management/category",
+                icon: ChartBarStacked,
+            },
+            {
+                title: "Distributor",
+                url: "/dashboard/management/distributor",
+                icon: Truck,
             },
             {
                 title: "Supplier",
                 url: "/dashboard/management/supplier",
-                icon: PersonStanding,
+                icon: Container,
             },
             {
                 title: "User",
@@ -61,11 +67,6 @@ const items = [
         icon: BadgeDollarSign,
     },
     {
-        title: "Supplier",
-        url: "/dashboard/supplier",
-        icon: Container,
-    },
-    {
         title: "Report",
         url: "/dashboard/report",
         icon: ClipboardMinus,
@@ -77,10 +78,27 @@ const items = [
     },
 ];
 
+const filterItemsRole = (items, role) => {
+    if (role !== "admin") {
+        return items.map(item => {
+            if (item.children) {
+                return {
+                    ...item,
+                    children: item.children.filter(child => child.title !== "User")
+                };
+            }
+            return item;
+        });
+    }
+    return items;
+}
+
 export default function AppSidebar() {
     const [isManagementOpen, setIsManagementOpen] = useState(false);
     const { url } = useUrl();
-
+    const { role } = useAuth();
+    const filteredItems = filterItemsRole(items, role);
+    
     const toggleManagement = () => {
         setIsManagementOpen(!isManagementOpen);
     };
@@ -104,7 +122,7 @@ export default function AppSidebar() {
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {items.map((item) => (
+                            {filteredItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     {item.children ? (
                                         <Collapsible>
