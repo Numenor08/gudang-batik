@@ -5,6 +5,7 @@ import { checkAdminRole } from '../middleware/roleMiddleware.js';
 import fs from 'fs';
 import path from 'path';
 import { logActivity } from './logController.js';
+import { addRefreshToken, findRefreshToken, deleteRefreshToken } from '../models/refreshTokenModel.js';
 
 export const getAllUser = [checkAdminRole, (req, res) => {
     User.getAll((err, result) => {
@@ -19,7 +20,6 @@ export const registerUser = (req, res) => {
     const { username, password, role, email } = req.body;
     const img = req.file ? req.file.path : null;
 
-    // Periksa apakah username sudah ada
     User.findByUsername(username, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error checking username', error: err });
@@ -29,22 +29,35 @@ export const registerUser = (req, res) => {
             return res.status(400).json({ message: 'Username already taken' });
         }
 
-        // Hash password dan buat pengguna baru
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
+        bcrypt.hash(password, 10, async (err, hashedPassword) => {
             if (err) {
-                console.error('Error hashing password:', err);
                 return res.status(500).json({ message: 'Error hashing password', error: err });
             }
 
             const userData = { username, password: hashedPassword, role, email, img };
 
-            User.create(userData, (err, result) => {
+            User.create(userData, async (err, result) => {
                 if (err) {
-                    console.error('Error creating user:', err);
                     return res.status(500).json({ message: 'Error creating user', error: err });
                 }
 
-                res.status(201).json({ message: 'User created successfully' });
+                const userId = result.insertId;
+                const accessToken = jwt.sign({ data: { userId: userId, role: role } }, process.env.JWT_SECRET, { expiresIn: '15m' });
+                const refreshToken = jwt.sign({ data: { userId: userId } }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+
+                await addRefreshToken(userId, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+
+                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
+                res.status(201).json({
+                    message: 'User created successfully',
+                    accessToken,
+                    user: {
+                        username: username,
+                        email: email,
+                        role: role,
+                        img: img
+                    }
+                });
             });
         });
     });
@@ -52,7 +65,6 @@ export const registerUser = (req, res) => {
 
 export const loginUser = (req, res) => {
     const { username, password } = req.body;
-    // console.log(username, password);
 
     User.findByUsername(username, (err, result) => {
         if (err) {
@@ -65,7 +77,7 @@ export const loginUser = (req, res) => {
 
         const user = result[0];
 
-        bcrypt.compare(password, user.password, (err, isMatch) => {
+        bcrypt.compare(password, user.password, async (err, isMatch) => {
             if (err) {
                 return res.status(500).json({ message: 'Error comparing passwords', error: err });
             }
@@ -74,16 +86,20 @@ export const loginUser = (req, res) => {
                 return res.status(401).json({ message: 'Invalid credentials' });
             }
 
-            const token = jwt.sign({ data: { userId: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const accessToken = jwt.sign({ data: { userId: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '15m' });
+            const refreshToken = jwt.sign({ data: { userId: user.id } }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
+            await addRefreshToken(user.id, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
             res.json({
                 message: 'Login successful',
-                token,
+                accessToken,
                 user: {
                     username: user.username,
                     email: user.email,
                     role: user.role,
-                    img: user.img // Sertakan path gambar dalam respons
+                    img: user.img
                 }
             });
         });
@@ -211,3 +227,32 @@ export const deleteUser = [checkAdminRole, (req, res) => {
         });
     })
 }]
+
+export const refreshToken = async (req, res) => {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+        return res.status(403).json({ message: 'No refresh token provided' });
+    }
+
+    try {
+        const tokenData = await findRefreshToken(refreshToken);
+
+        if (!tokenData) {
+            return res.status(403).json({ message: 'Invalid refresh token' });
+        }
+
+        jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(500).json({ message: 'Failed to authenticate refresh token' });
+            }
+
+            const userId = decoded.data.userId;
+            const newAccessToken = jwt.sign({ data: { userId: userId } }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+            res.json({ accessToken: newAccessToken });
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error refreshing token', error });
+    }
+};

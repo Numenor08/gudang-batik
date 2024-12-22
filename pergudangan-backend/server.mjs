@@ -9,6 +9,7 @@ import distributorRoutes from './routes/distributorRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import supplierRoutes from './routes/supplierRoutes.js';
 import { verifyToken } from './middleware/authMiddleware.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -21,13 +22,14 @@ const app = express();
 
 // Konfigurasi CORS
 app.use(cors({
-    origin: "*", // Ganti dengan URL frontend
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Authorization", "Content-Type"],
     credentials: true
 }));
 
 // Middleware untuk mengatur batas ukuran payload
+app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
