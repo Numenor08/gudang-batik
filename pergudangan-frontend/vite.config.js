@@ -13,6 +13,8 @@ export default defineConfig({
       "@shadcn": path.resolve(__dirname, "./src/components/ui"),
       "@hooks": path.resolve(__dirname, "./src/hooks"),
       "@components": path.resolve(__dirname, "./src/components"),
+      "@management": path.resolve(__dirname, "./src/pages/management"),
+      "@skeleton": path.resolve(__dirname, "./src/components/skeleton"),
       "@pages": path.resolve(__dirname, "./src/pages"),
     },
   },

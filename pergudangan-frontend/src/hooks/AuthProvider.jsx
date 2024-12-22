@@ -1,15 +1,16 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-// import {jwtDecode} from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
+import { useCallback } from "react";
 
 const AuthContext = createContext();
-const AuthProvider = ({ children }) => {
-    const tokenTemp = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNDY2OTQzOSwiZXhwIjoxNzM0NjczMDM5fQ.KftgYL9lKSHVHUt880eB-XkfeAS869NSzlj2GPESHFs';
-    // const [token, setToken_] = useState(localStorage.getItem("token"));
-    const [token, setToken_] = useState(tokenTemp);
-    const [role, setRole] = useState(null);
 
-    const setToken = (newToken) => {
+const AuthProvider = ({ children }) => {
+    const [token, setToken_] = useState('');
+    const [role, setRole] = useState(null);
+    const [img , setImg] = useState(null);
+
+    const setToken = useCallback((newToken) => {
         setToken_(newToken);
         if (newToken) {
             // localStorage.setItem('token', newToken);
@@ -18,13 +19,13 @@ const AuthProvider = ({ children }) => {
             // localStorage.removeItem('token');
             delete axios.defaults.headers.common["Authorization"];
         }
-    };
+    }, []);
 
     useEffect(() => {
         if (token) {
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-            // const decodedToken = jwtDecode(token);
-            // setRole(decodedToken.data.role);
+            const decodedToken = jwtDecode(token);
+            setRole(decodedToken.data.role);
             setRole("admin");
         } else {
             setRole(null);
@@ -36,8 +37,10 @@ const AuthProvider = ({ children }) => {
             token,
             setToken,
             role,
+            img,
+            setImg
         }),
-        [token, role]
+        [token, role, img, setToken]
     );
 
     return (
