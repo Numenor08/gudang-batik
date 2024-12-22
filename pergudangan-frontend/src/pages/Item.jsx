@@ -81,7 +81,6 @@ function Item() {
     useEffect(() => {
         setUrl(urlHere);
     }, [setUrl]);
-    console.log('Item jalan');
     return (
         <>
             <MyBreadCrumb
