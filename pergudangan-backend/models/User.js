@@ -11,6 +11,11 @@ class User {
         const query = 'SELECT * FROM users WHERE username = ?';
         db.query(query, [username], callback);
     }
+
+    static updatePassword(id, password, callback) {
+        const query = 'UPDATE users SET password = ? WHERE id = ?';
+        db.query(query, [password, id], callback);
+    }
 }
 
 export default User;

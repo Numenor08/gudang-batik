@@ -1,8 +1,9 @@
 import express from 'express';
-import { getAllDistributors, getDistributorById, createDistributor, updateDistributor, deleteDistributor } from '../controllers/distributorController.js';
+import { getAllDistributors, getDistributorById, createDistributor, getMostActiveDistributor , updateDistributor, deleteDistributor } from '../controllers/distributorController.js';
 
 const router = express.Router();
 
+router.get('/most-active', getMostActiveDistributor);
 router.get('/', getAllDistributors);
 router.get('/:id', getDistributorById);
 router.post('/', createDistributor);

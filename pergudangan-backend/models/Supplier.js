@@ -27,6 +27,17 @@ class Supplier {
         const query = 'DELETE FROM suppliers WHERE id = ?';
         db.query(query, [id], callback);
     }
+
+    static getMostActiveSupplier(callback) {
+        const query = `SELECT s.name AS name, COUNT(t.id) AS transaction
+        FROM transactions t
+        JOIN suppliers s ON t.supplier_id = s.id
+        WHERE t.type = 'in'
+        GROUP BY s.name
+        ORDER BY transaction DESC
+        LIMIT 1;`
+        db.query(query, callback);
+    } 
 }
 
 export default Supplier;

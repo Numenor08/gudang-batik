@@ -14,14 +14,24 @@ dotenv.config();
 
 const app = express();
 
+// Middleware untuk menunda respons API
+// app.use((req, res, next) => {
+//     setTimeout(next, 1000);
+// });
+
 // Konfigurasi CORS
 app.use(cors({
     origin: "*", // Ganti dengan URL frontend
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Authorization", "Content-Type"]
 }));
-app.use(express.json());
 
+// Middleware untuk mengatur batas ukuran payload
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Middleware untuk menyajikan file statis dari direktori uploads
+app.use('/uploads', express.static('uploads'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', verifyToken, transactionRoutes);

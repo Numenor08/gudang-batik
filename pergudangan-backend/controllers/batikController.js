@@ -1,5 +1,7 @@
 import Batik from '../models/Batik.js';
 import { logActivity } from './logController.js';
+import fs from 'fs';
+import path from 'path';
 
 export const getAllBatik = (req, res) => {
     Batik.getAll((err, result) => {
@@ -12,6 +14,7 @@ export const getAllBatik = (req, res) => {
 
 export const getBatikById = (req, res) => {
     const batikId = req.params.id;
+
     Batik.getById(batikId, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching batik data', error: err });
@@ -23,8 +26,36 @@ export const getBatikById = (req, res) => {
     });
 };
 
+export const getTotalStock = (req, res) => {
+    Batik.getTotalStock((err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching total stock', error: err });
+        }
+        res.json(result[0]);
+    });
+};
+
+export const getTopBatik = (req, res) => {
+    Batik.getTopBatik((err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching top 5 batik', error: err });
+        }
+        res.json(result);
+    });
+};
+
+export const getMostStockbyCategory = (req, res) => {
+    Batik.getMostStockbyCategory((err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching most stock by category', error: err });
+        }
+        res.json(result[0]);
+    });
+}
+
 export const createBatik = (req, res) => {
-    const { name, color, size, stock, min_stock, img, category_id } = req.body;
+    const { name, color, size, stock, min_stock, category_id } = req.body;
+    const img = req.file ? req.file.path : null;
     const batikData = { name, color, size, stock, min_stock, img, category_id };
 
     Batik.create(batikData, (err, result) => {
@@ -39,34 +70,81 @@ export const createBatik = (req, res) => {
 
 export const updateBatik = (req, res) => {
     const batikId = req.params.id;
-    const { name, color, size, stock, min_stock, img, category_id } = req.body;
+    const { name, color, size, stock, min_stock, category_id } = req.body;
+    const img = req.file ? req.file.path : null;
     const batikData = { name, color, size, stock, min_stock, img, category_id };
 
-    Batik.update(batikId, batikData, (err, result) => {
+    Batik.getById(batikId, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Error updating batik', error: err });
+            return res.status(500).json({ message: 'Error fetching batik data', error: err });
         }
-        if (result.affectedRows === 0) {
+        if (result.length === 0) {
             return res.status(404).json({ message: 'Batik not found' });
         }
 
-        logActivity(req.user.id, `Updated Batik with ID ${batikId}`);
-        res.json({ message: 'Batik updated successfully' });
+        const oldImgPath = result[0].img;
+
+        Batik.update(batikId, batikData, (err, updateResult) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error updating batik', error: err });
+            }
+            if (updateResult.affectedRows === 0) {
+                return res.status(404).json({ message: 'Batik not found' });
+            }
+
+            if (img && oldImgPath) {
+                const fullPath = path.resolve(oldImgPath);
+                fs.unlink(fullPath, (unlinkErr) => {
+                    if (unlinkErr) {
+                        return res.status(500).json({ message: 'Error deleting old batik image', error: unlinkErr });
+                    }
+
+                    logActivity(req.user.id, `Updated Batik with ID ${batikId}`);
+                    res.json({ message: 'Batik updated successfully' });
+                });
+            } else {
+                logActivity(req.user.id, `Updated Batik with ID ${batikId}`);
+                res.json({ message: 'Batik updated successfully' });
+            }
+        });
     });
 };
 
 export const deleteBatik = (req, res) => {
     const batikId = req.params.id;
 
-    Batik.delete(batikId, (err, result) => {
+    Batik.getById(batikId, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Error deleting batik', error: err });
+            return res.status(500).json({ message: 'Error fetching batik data', error: err });
         }
-        if (result.affectedRows === 0) {
+        if (result.length === 0) {
             return res.status(404).json({ message: 'Batik not found' });
         }
 
-        logActivity(req.user.id, `Deleted Batik with ID ${batikId}`);
-        res.json({ message: 'Batik deleted successfully' });
+        const imgPath = result[0].img;
+
+        Batik.delete(batikId, (err, deleteResult) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error deleting batik', error: err });
+            }
+            if (deleteResult.affectedRows === 0) {
+                return res.status(404).json({ message: 'Batik not found' });
+            }
+
+            if (imgPath) {
+                const fullPath = path.resolve(imgPath);
+                fs.unlink(fullPath, (unlinkErr) => {
+                    if (unlinkErr) {
+                        return res.status(500).json({ message: 'Error deleting batik image', error: unlinkErr });
+                    }
+
+                    logActivity(req.user.id, `Deleted Batik with ID ${batikId}`);
+                    res.json({ message: 'Batik deleted successfully' });
+                });
+            } else {
+                logActivity(req.user.id, `Deleted Batik with ID ${batikId}`);
+                res.json({ message: 'Batik deleted successfully' });
+            }
+        });
     });
 };

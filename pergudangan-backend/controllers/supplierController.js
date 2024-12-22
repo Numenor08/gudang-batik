@@ -3,7 +3,7 @@ import { logActivity } from './logController.js';
 import db from '../config/db.js';
 
 export const getAllSuppliers = (req, res) => {
-    Supplier.getAll(db, (err, result) => {
+    Supplier.getAll((err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching suppliers', error: err });
         }
@@ -12,8 +12,12 @@ export const getAllSuppliers = (req, res) => {
 };
 
 export const getSupplierById = (req, res) => {
-    const supplierId = req.params.id;
-    Supplier.getById(db, supplierId, (err, result) => {
+    const supplierId = parseInt(req.params.id, 10); // Ensure the ID is a number
+    if (isNaN(supplierId)) {
+        return res.status(400).json({ message: 'Invalid distributor ID' });
+    }
+
+    Supplier.getById(supplierId, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching supplier', error: err });
         }
@@ -25,10 +29,11 @@ export const getSupplierById = (req, res) => {
 };
 
 export const createSupplier = (req, res) => {
-    const { name, contact_person, phone, email, address, img } = req.body;
+    const { name, contact_person, phone, email, address } = req.body;
+    const img = req.file? req.file.path : null;
     const supplierData = { name, contact_person, phone, email, address, img };
 
-    Supplier.create(db, supplierData, (err, result) => {
+    Supplier.create(supplierData, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error creating supplier', error: err });
         }
@@ -40,10 +45,11 @@ export const createSupplier = (req, res) => {
 
 export const updateSupplier = (req, res) => {
     const supplierId = req.params.id;
-    const { name, contact_person, phone, email, address, img } = req.body;
+    const { name, contact_person, phone, email, address } = req.body;
+    const img = req.file? req.file.path : null;
     const supplierData = { name, contact_person, phone, email, address, img };
 
-    Supplier.update(db, supplierId, supplierData, (err, result) => {
+    Supplier.update(supplierId, supplierData, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error updating supplier', error: err });
         }
@@ -59,7 +65,7 @@ export const updateSupplier = (req, res) => {
 export const deleteSupplier = (req, res) => {
     const supplierId = req.params.id;
 
-    Supplier.delete(db, supplierId, (err, result) => {
+    Supplier.delete(supplierId, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error deleting supplier', error: err });
         }
@@ -69,5 +75,14 @@ export const deleteSupplier = (req, res) => {
 
         logActivity(req.user.id, `Deleted Supplier with ID ${supplierId}`);
         res.json({ message: 'Supplier deleted successfully' });
+    });
+};
+
+export const getMostActiveSupplier = (req, res) => {
+    Supplier.getMostActiveSupplier((err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching most active supplier', error: err });
+        }
+        res.json(result[0]);
     });
 };

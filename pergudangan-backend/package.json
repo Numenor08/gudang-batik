@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "start:watch": "nodemon server.mjs",
+    "start:watch": "nodemon server.mjs --port 5000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,7 +18,9 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.11.5"
+    "multer": "1.4.5-lts.1",
+    "mysql2": "^3.11.5",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

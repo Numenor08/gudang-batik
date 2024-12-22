@@ -3,7 +3,7 @@ import { logActivity } from './logController.js';
 import db from '../config/db.js';
 
 export const getAllDistributors = (req, res) => {
-    Distributor.getAll(db, (err, result) => {
+    Distributor.getAll((err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching distributors', error: err });
         }
@@ -12,8 +12,12 @@ export const getAllDistributors = (req, res) => {
 };
 
 export const getDistributorById = (req, res) => {
-    const distributorId = req.params.id;
-    Distributor.getById(db, distributorId, (err, result) => {
+    const distributorId = parseInt(req.params.id, 10); // Ensure the ID is a number
+    if (isNaN(distributorId)) {
+        return res.status(400).json({ message: 'Invalid distributor ID' });
+    }
+
+    Distributor.getById(distributorId, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching distributor', error: err });
         }
@@ -28,7 +32,7 @@ export const createDistributor = (req, res) => {
     const { name, contact_person, phone, email, address, img } = req.body;
     const distributorData = { name, contact_person, phone, email, address, img };
 
-    Distributor.create(db, distributorData, (err, result) => {
+    Distributor.create(distributorData, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error creating distributor', error: err });
         }
@@ -43,7 +47,7 @@ export const updateDistributor = (req, res) => {
     const { name, contact_person, phone, email, address, img } = req.body;
     const distributorData = { name, contact_person, phone, email, address, img };
 
-    Distributor.update(db, distributorId, distributorData, (err, result) => {
+    Distributor.update(distributorId, distributorData, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error updating distributor', error: err });
         }
@@ -59,7 +63,7 @@ export const updateDistributor = (req, res) => {
 export const deleteDistributor = (req, res) => {
     const distributorId = req.params.id;
 
-    Distributor.delete(db, distributorId, (err, result) => {
+    Distributor.delete(distributorId, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error deleting distributor', error: err });
         }
@@ -71,3 +75,12 @@ export const deleteDistributor = (req, res) => {
         res.json({ message: 'Distributor deleted successfully' });
     });
 };
+
+export const getMostActiveDistributor = (req, res) => {
+    Distributor.getMostActive((err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching most active distributor', error: err });
+        }
+        res.json(result[0]);
+    });
+}

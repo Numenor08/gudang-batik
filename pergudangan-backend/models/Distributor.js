@@ -27,6 +27,17 @@ class Distributor {
         const query = 'DELETE FROM distributors WHERE id = ?';
         db.query(query, [id], callback);
     }
+
+    static getMostActive(callback) {
+        const query = `SELECT d.name AS name, COUNT(t.id) AS transaction
+        FROM transactions t
+        JOIN distributors d ON t.distributor_id = d.id
+        WHERE t.type = 'out'
+        GROUP BY d.name
+        ORDER BY transaction DESC
+        LIMIT 1;`;
+        db.query(query, callback);
+    }
 }
 
 export default Distributor;

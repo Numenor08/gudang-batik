@@ -25,3 +25,21 @@ export const getAllTransactions = (req, res) => {
         res.json(result);
     });
 };
+
+export const getLast7DaysTransactions = (req, res) => {
+    Transaction.getLast7DaysTransactions((err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching transactions', error: err });
+        }
+        res.json(result);
+    });
+}
+
+export const getTransactionToday = (req, res) => {
+    Transaction.getTransactionToday((err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching transactions', error: err })
+        }
+        res.json(result[0]);
+    })
+}
