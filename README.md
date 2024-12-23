@@ -14,19 +14,19 @@ Ini adalah proyek akhir untuk kelas "Pemrograman Framework" tahun 2024.
 ### Backend
 1. Clone repository ini.
 2. Masuk ke direktori `pergudangan-backend`.
-3. Install dependencies dengan menjalankan `pnpm install`.
+3. Install dependencies dengan menjalankan `npm install`.
 4. Buat file `.env` berdasarkan `.env.example` dan sesuaikan konfigurasi database.
-5. Jalankan server dengan `pnpm start`.
+5. Jalankan server dengan `npm start`.
 
 ### Frontend
 1. Masuk ke direktori `pergudangan-frontend`.
-2. Install dependencies dengan menjalankan `pnpm install`.
-3. Jalankan aplikasi frontend dengan `pnpm dev`.
+2. Install dependencies dengan menjalankan `npm install`.
+3. Jalankan aplikasi frontend dengan `npm run dev`.
 
 ## Fitur
 
 ### Backend
-- CRUD untuk data Batik, Kategori, dan User.
+- CRUD untuk data Batik, Kategori, Distributor, Supplier, Transaksi dan User.
 - Autentikasi dan otorisasi menggunakan JWT.
 - Logging aktivitas pengguna.
 
