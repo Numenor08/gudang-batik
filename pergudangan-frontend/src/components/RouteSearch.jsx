@@ -12,18 +12,11 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useAuth } from "@/hooks/AuthProvider"
 
 const filtersidebarRouteRole = (sidebarRoute, role) => {
     if (role !== "admin") {
-        return sidebarRoute.map(item => {
-            if (item.children) {
-                return {
-                    ...item,
-                    children: item.children.filter(child => child.title !== "User")
-                };
-            }
-            return item;
-        });
+        return sidebarRoute.filter(item => item.title !== "User");
     }
     return sidebarRoute;
 }
@@ -31,7 +24,8 @@ const filtersidebarRouteRole = (sidebarRoute, role) => {
 export function RouteSearch({ sidebarRoute, className }) {
     const [open, setOpen] = React.useState(false)
     const navigate = useNavigate();
-    const routes = filtersidebarRouteRole(sidebarRoute, "admin");
+    const { role } = useAuth();
+    const routes = filtersidebarRouteRole(sidebarRoute, role);
 
     React.useEffect(() => {
         const down = (e) => {
