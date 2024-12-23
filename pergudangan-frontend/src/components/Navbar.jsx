@@ -1,4 +1,4 @@
-import { Bell, Search } from "lucide-react"
+import { Bell } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,10 +8,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import DropdownUser from "@/components/DropdownUser"
+import { RouteSearch } from "@/components/RouteSearch"
+import { sidebarRoute2 } from "@/components/AppSidebar"
 
 function Navbar({ children }) {
   
@@ -21,12 +21,7 @@ function Navbar({ children }) {
       <div className="flex items-center gap-2">
         {children}
         <Separator orientation="vertical" className="h-6"/>
-        <form action="" className="flex w-full max-w-sm items-center space-x-2">
-          <Input className="focus-visible:ring-offset-0 focus-visible:ring-1 text-black" type="text" placeholder="Search" />
-          <Button className="p-3" type="submit">
-            <Search color="#FFFFFF" />
-          </Button>
-        </form>
+        <RouteSearch sidebarRoute={sidebarRoute2} />
       </div>
       <div className="flex items-center">
         <DropdownMenu className="border-collapse">

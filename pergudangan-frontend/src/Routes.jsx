@@ -5,11 +5,10 @@ import Dashboard from "@/pages/Dashboard";
 import Item from "@/pages/Item";
 import Transaction from "@/pages/Transaction";
 import Report from "@/pages/Report";
-import Setting from "@/pages/Setting";
 import Profile from "@/pages/Profile";
+import Distributor from "@/components/Distributor";
+import Supplier from "@/components/Supplier";
 import ManageItem from "@management/ManageItem";
-import ManageDistributor from "@management/ManageDistributor";
-import ManageSupplier from "@management/ManageSupplier";
 import ManageUser from "@management/ManageUser";
 import ManageCategory from "@management/ManageCategory";
 import LoginPage from "@/pages/LoginPage";
@@ -57,15 +56,14 @@ function AppRoutes() {
                         <Route path="/dashboard/*" element={<Dashboard />}>
                             <Route path="" element={<Item />} />
                             <Route path="management/*">
-                                <Route path="item" element={<ManageItem className="m-8 flex flex-col gap-8"/>} />
-                                <Route path="category" element={<ManageCategory className="m-8 flex flex-col gap-8"/>} />
-                                <Route path="distributor" element={<ManageDistributor className="m-8 flex flex-col gap-8"/>} />
-                                <Route path="supplier" element={<ManageSupplier className="m-8 flex flex-col gap-8"/>} />
-                                <Route path="user" element={<ManageUser className="m-8 flex flex-col gap-8"/>} />
+                                <Route path="item" element={<ManageItem className="m-8 flex flex-col gap-8" />} />
+                                <Route path="category" element={<ManageCategory className="m-8 flex flex-col gap-8" />} />
+                                <Route path="user" element={<ManageUser className="m-8 flex flex-col gap-8" />} />
                             </Route>
+                            <Route path="distributor" element={<Distributor className="m-8 flex flex-col gap-8" />} />
+                            <Route path="supplier" element={<Supplier className="m-8 flex flex-col gap-8" />} />
                             <Route path="transaction" element={<Transaction />} />
                             <Route path="report" element={<Report />} />
-                            <Route path="setting" element={<Setting />} />
                             <Route path="profile" element={<Profile />} />
                         </Route>
                     </Route>

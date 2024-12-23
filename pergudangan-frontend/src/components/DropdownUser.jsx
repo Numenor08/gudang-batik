@@ -46,9 +46,6 @@ const DropdownUser = () => {
                 <DropdownMenuItem>
                     <Link to="/dashboard/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <Link to="/dashboard/setting">Setting</Link>
-                </DropdownMenuItem>
                 <DropdownMenuItem as="button" onClick={handleLogout}>
                     Logout
                 </DropdownMenuItem>

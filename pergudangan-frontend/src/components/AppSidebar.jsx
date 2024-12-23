@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserRoundPen, Truck, ChartBarStacked, Shirt, ClipboardMinus, Package, BadgeDollarSign, LayoutDashboard, SquareChartGantt, Container, Settings, ChevronDown, ChevronUp } from "lucide-react";
+import { UserRoundPen, Truck, ChartBarStacked, Shirt, ClipboardMinus, Package, BadgeDollarSign, LayoutDashboard, SquareChartGantt, Container, ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
     Sidebar,
@@ -23,8 +23,51 @@ import {
 import { useUrl } from '@/hooks/UrlProvider';
 import { useAuth } from "@/hooks/AuthProvider";
 
-// Menu items.
-const items = [
+// Menu sidebarRoute.
+export const sidebarRoute2 = [
+    {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+    },
+    {
+        title: "Item",
+        url: "/dashboard/management/item",
+        icon: Shirt,
+    },
+    {
+        title: "Category",
+        url: "/dashboard/management/category",
+        icon: ChartBarStacked,
+    },
+    {
+        title: "User",
+        url: "/dashboard/management/user",
+        icon: UserRoundPen,
+    },
+    {
+        title: "Distributor",
+        url: "/dashboard/distributor",
+        icon: Truck,
+    },
+    {
+        title: "Supplier",
+        url: "/dashboard/supplier",
+        icon: Container,
+    },
+    {
+        title: "Transaction",
+        url: "/dashboard/transaction",
+        icon: BadgeDollarSign,
+    },
+    {
+        title: "Report",
+        url: "/dashboard/report",
+        icon: ClipboardMinus,
+    },
+];
+
+const sidebarRoute = [
     {
         title: "Dashboard",
         url: "/dashboard",
@@ -45,21 +88,21 @@ const items = [
                 icon: ChartBarStacked,
             },
             {
-                title: "Distributor",
-                url: "/dashboard/management/distributor",
-                icon: Truck,
-            },
-            {
-                title: "Supplier",
-                url: "/dashboard/management/supplier",
-                icon: Container,
-            },
-            {
                 title: "User",
                 url: "/dashboard/management/user",
                 icon: UserRoundPen,
             },
         ],
+    },
+    {
+        title: "Distributor",
+        url: "/dashboard/distributor",
+        icon: Truck,
+    },
+    {
+        title: "Supplier",
+        url: "/dashboard/supplier",
+        icon: Container,
     },
     {
         title: "Transaction",
@@ -71,16 +114,11 @@ const items = [
         url: "/dashboard/report",
         icon: ClipboardMinus,
     },
-    {
-        title: "Settings",
-        url: "/dashboard/setting",
-        icon: Settings,
-    },
 ];
 
-const filterItemsRole = (items, role) => {
+const filtersidebarRouteRole = (sidebarRoute, role) => {
     if (role !== "admin") {
-        return items.map(item => {
+        return sidebarRoute.map(item => {
             if (item.children) {
                 return {
                     ...item,
@@ -90,15 +128,15 @@ const filterItemsRole = (items, role) => {
             return item;
         });
     }
-    return items;
+    return sidebarRoute;
 }
 
 export default function AppSidebar() {
     const [isManagementOpen, setIsManagementOpen] = useState(false);
     const { url } = useUrl();
     const { role } = useAuth();
-    const filteredItems = filterItemsRole(items, role);
-    
+    const filteredsidebarRoute = filtersidebarRouteRole(sidebarRoute, role);
+
     const toggleManagement = () => {
         setIsManagementOpen(!isManagementOpen);
     };
@@ -122,7 +160,7 @@ export default function AppSidebar() {
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {filteredItems.map((item) => (
+                            {filteredsidebarRoute.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     {item.children ? (
                                         <Collapsible>

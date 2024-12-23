@@ -12,8 +12,8 @@ import MyBreadCrumb from "@/components/MyBreadCrumb";
 import { SkeletonTable } from "@/components/skeleton/MySkeleton";
 import { ErrorBoundary } from "react-error-boundary";
 
-function ManageSupplier({ className }) {
-    const urlHere = "/dashboard/management/supplier";
+function Supplier({ className }) {
+    const urlHere = "/dashboard/supplier";
     const { setUrl } = useUrl(UrlContext);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const { token } = useAuth();
@@ -46,7 +46,6 @@ function ManageSupplier({ className }) {
         <MyBreadCrumb
             items={[
                 { type: "link", path: "/dashboard", label: "Dashboard" },
-                { type: "link", path: "", label: "Management" },
                 { type: "page", path: urlHere, label: "Supplier" }]}
         />
         <div className={className}>
@@ -84,4 +83,4 @@ function ManageSupplier({ className }) {
     );
 }
 
-export default ManageSupplier;
+export default Supplier;
