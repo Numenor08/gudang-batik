@@ -33,7 +33,7 @@ function Transaction() {
                     <div className="flex-none">
                         <ErrorBoundary fallback={<SkeletonBatikForm/>}>
                             <Suspense fallback={<SkeletonBatikForm />}>
-                                <AddTransactionForm className="max-w-96" />
+                                <AddTransactionForm className="w-96" />
                             </Suspense>
                         </ErrorBoundary>
                     </div>

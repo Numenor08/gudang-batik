@@ -34,9 +34,6 @@ function EditUserForm({ user, onClose }) {
                 }
             });
             console.log("Response: ", response);
-            if (response.data.img && response.status === 200) {
-                localStorage.setItem('userImg', response.data.img);
-            }
 
             setSuccessMessage('User updated successfully.');
             setErrorMessage('');

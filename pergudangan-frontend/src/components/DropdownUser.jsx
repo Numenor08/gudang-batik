@@ -11,12 +11,14 @@ import { ChevronDown } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/hooks/AuthProvider"
 import axiosInstance from "@/utils/axiosInstance"
+import useSWR from "swr";
+
+const VITE_API_URL = import.meta.env.VITE_API_URL
 
 const DropdownUser = () => {
     const navigate = useNavigate()
     const { removeToken, setIsLogin } = useAuth()
-    const img = localStorage.getItem('userImg')
-    const VITE_API_URL = import.meta.env.VITE_API_URL
+    const { data: img } = useSWR(`/api/auth/img/${1}`);
 
     const handleLogout = async () => {
         try {
@@ -42,7 +44,7 @@ const DropdownUser = () => {
             <DropdownMenuContent>
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                     <Link to="/dashboard/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem as="button" onClick={handleLogout}>

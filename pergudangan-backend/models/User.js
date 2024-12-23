@@ -6,6 +6,11 @@ class User {
         db.query(query, callback);
     }
 
+    static getImgById(id, callback) {
+        const query = 'SELECT img FROM users WHERE id = ?';
+        db.query(query, [id], callback);
+    }
+
     static create(data, callback) {
         const { username, password, role, email, img } = data;
         const query = 'INSERT INTO users (username, password, role, email, img) VALUES (?, ?, ?, ?, ?)';
@@ -16,7 +21,7 @@ class User {
         const query = 'SELECT id, username, role, email, img FROM users WHERE id = ?';
         db.query(query, [id], callback);
     }
-    
+
     static findByUsername(username, callback) {
         const query = 'SELECT * FROM users WHERE username = ?';
         db.query(query, [username], callback);

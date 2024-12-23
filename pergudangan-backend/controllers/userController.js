@@ -16,6 +16,34 @@ export const getAllUser = [checkAdminRole, (req, res) => {
     });
 }];
 
+export const getUserById = (req, res) => {
+    const { id } = req.params;
+
+    User.findById(id, (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching user data', error: err });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(result[0]);
+    });
+}
+
+export const getImgById = (req, res) => {
+    const { id } = req.params;
+
+    User.getImgById(id, (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching user image', error: err });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(result[0].img);
+    }
+);}
+
 export const registerUser = (req, res) => {
     const { username, password, role, email } = req.body;
     const img = req.file ? req.file.path : null;
@@ -78,7 +106,7 @@ export const loginUser = (req, res) => {
                 return res.status(401).json({ message: 'Invalid credentials' });
             }
 
-            const accessToken = jwt.sign({ data: { userId: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '1m' });
+            const accessToken = jwt.sign({ data: { userId: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '15m' });
             const refreshToken = jwt.sign({ data: { userId: user.id, role: user.role } }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
             await addRefreshToken(user.id, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
@@ -153,7 +181,7 @@ export const forgotPassword = (req, res) => {
     });
 };
 
-export const updateUser = [checkAdminRole, (req, res) => {
+export const updateUser = (req, res) => {
     const { id } = req.params;
     const { username, role, email } = req.body;
     const img = req.file ? req.file.path : null;
@@ -196,7 +224,7 @@ export const updateUser = [checkAdminRole, (req, res) => {
             }
         });
     });
-}];
+};
 
 export const deleteUser = [checkAdminRole, (req, res) => {
     const { id } = req.params;
@@ -267,7 +295,7 @@ export const refreshToken = async (req, res) => {
             const userRole = decoded.data.role;
 
             // Buat access token baru
-            const newAccessToken = jwt.sign({ data: { userId: userId, role: userRole } }, process.env.JWT_SECRET, { expiresIn: '1m' });
+            const newAccessToken = jwt.sign({ data: { userId: userId, role: userRole } }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
 
             // Kirim access token baru ke klien

@@ -1,12 +1,14 @@
 import axiosInstance from "@/utils/axiosInstance";
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(localStorage.getItem('accessToken'));
-    const [role, setRole] = useState(null);
+    const initialToken = localStorage.getItem('accessToken');
+    const [token, setToken] = useState(initialToken);
+    const [role, setRole] = useState(initialToken ? jwtDecode(initialToken).data.role : null);
+    const [userId , setUserId] = useState(initialToken ? jwtDecode(initialToken).data.userId : null);
     const [isLogin, setIsLogin] = useState(true);
 
     const saveToken = useCallback((accessToken) => {
@@ -21,7 +23,6 @@ const AuthProvider = ({ children }) => {
     const removeToken = useCallback(() => {
         setToken(null);
         localStorage.removeItem('accessToken');
-        localStorage.removeItem('userImg')
         setRole(null);
     }, []);
     
@@ -44,6 +45,7 @@ const AuthProvider = ({ children }) => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
+                setUserId(decodedToken.data.userId);
                 setRole(decodedToken.data.role);
             } catch (error) {
                 console.error('Failed to decode token:', error);
@@ -59,9 +61,10 @@ const AuthProvider = ({ children }) => {
             role,
             removeToken,
             isLogin,
-            setIsLogin
+            setIsLogin,
+            userId,
         }),
-        [token, role, saveToken, removeToken, isLogin, setIsLogin]
+        [token, role, saveToken, removeToken, isLogin, setIsLogin, userId]
     );
 
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
