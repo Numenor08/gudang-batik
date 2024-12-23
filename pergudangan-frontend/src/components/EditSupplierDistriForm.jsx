@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
-import { useAuth } from "@/hooks/AuthProvider";
 
 function EditSupplierDistriForm({ supplier, onClose, type }) {
     const [name, setName] = useState(supplier.name);
@@ -15,7 +14,6 @@ function EditSupplierDistriForm({ supplier, onClose, type }) {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const { token } = useAuth();
 
     const handleEditSupplier = async (event) => {
         event.preventDefault();
@@ -28,11 +26,7 @@ function EditSupplierDistriForm({ supplier, onClose, type }) {
                 email,
                 address,
             };
-            await axiosInstance.put(`/api/${type}/${supplier.id}`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            await axiosInstance.put(`/api/${type}/${supplier.id}`, formData);
             setSuccessMessage('Supplier updated successfully.');
             setLoading(false);
             onClose();

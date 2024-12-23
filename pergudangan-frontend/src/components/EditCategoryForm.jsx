@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
-import { useAuth } from "@/hooks/AuthProvider";
 
 function EditCategoryForm({ category, onClose }) {
     const [name, setName] = useState(category.name);
@@ -11,18 +10,13 @@ function EditCategoryForm({ category, onClose }) {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const { token } = useAuth();
 
     const handleEditCategory = async (event) => {
         event.preventDefault();
         setLoading(true);
         try {
             const formData = { name, description };
-            await axiosInstance.put(`/api/categories/${category.id}`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-            });
+            await axiosInstance.put(`/api/categories/${category.id}`, formData);
             setSuccessMessage('Category updated successfully.');
             setLoading(false);
             onClose();

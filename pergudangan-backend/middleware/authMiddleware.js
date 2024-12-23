@@ -8,29 +8,40 @@ export const verifyToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if (!token) {
-        return res.status(403).json({ message: 'No token provided' });
+        return res.status(401).json({ message: 'No token provided' }); // Gunakan 401
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(500).json({ message: 'Failed to authenticate token' });
+            const isExpired = err.name === 'TokenExpiredError';
+            return res.status(401).json({
+                message: isExpired
+                    ? 'Access token expired'
+                    : 'Invalid access token',
+            });
         }
 
         req.user = decoded.data;
         next();
     });
 };
+
 
 export const verifyRefreshToken = (req, res, next) => {
     const token = req.cookies.refreshToken;
 
     if (!token) {
-        return res.status(403).json({ message: 'No refresh token provided' });
+        return res.status(401).json({ message: 'No refresh token provided' }); // Gunakan 401
     }
 
     jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(500).json({ message: 'Failed to authenticate refresh token' });
+            const isExpired = err.name === 'TokenExpiredError';
+            return res.status(401).json({
+                message: isExpired
+                    ? 'Refresh token expired'
+                    : 'Invalid refresh token',
+            });
         }
 
         req.user = decoded.data;
@@ -38,11 +49,12 @@ export const verifyRefreshToken = (req, res, next) => {
     });
 };
 
+
 export const checkRefreshToken = (req, res, next) => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-        return res.status(403).json({ message: 'No refresh token provided' });
+        return res.status(401).json({ message: 'No refresh token provided' }); // Gunakan 401
     }
 
     next();

@@ -4,11 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import axiosInstance from "@/utils/axiosInstance";
-import { useAuth } from "@/hooks/AuthProvider";
 import useSWR from "swr";
 
 function AddTransactionForm({className}) {
-    const { token } = useAuth();
     const [type, setType] = useState('In');
     const [quantity, setQuantity] = useState('');
     const [batik, setBatik] = useState('');
@@ -33,11 +31,7 @@ function AddTransactionForm({className}) {
                 supplier_id: lowerType === 'in' ? supplierDistributor : null,
                 distributor_id: lowerType === 'out' ? supplierDistributor : null,
             };
-            await axiosInstance.post('/api/transactions', formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            await axiosInstance.post('/api/transactions', formData);
             setSuccessMessage('Transaction added successfully.');
             setErrorMessage('');
             setLoading(false);

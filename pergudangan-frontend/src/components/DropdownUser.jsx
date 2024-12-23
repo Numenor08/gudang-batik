@@ -25,7 +25,6 @@ const DropdownUser = () => {
             console.error('Logout error:', error)
         } finally {
             removeToken()
-            localStorage.removeItem('userImg')
             setIsLogin(true);
             navigate('/')
         }

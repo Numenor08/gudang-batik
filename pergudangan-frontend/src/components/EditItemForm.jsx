@@ -2,7 +2,6 @@ import { useState, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/AuthProvider";
 import useSWR from "swr";
 import axiosInstance from "@/utils/axiosInstance";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
@@ -19,7 +18,6 @@ function EditItemForm({ item, onClose }) {
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const { data: Categories } = useSWR('/api/categories');
-    const { token } = useAuth();
     const { mutate } = useSWR(`/api/batik/${item.id}`);
 
     const handleEditItem = async (e) => {
@@ -58,7 +56,6 @@ function EditItemForm({ item, onClose }) {
                 await axiosInstance.put(`/api/batik/${item.id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${token}`
                     },
                 });
                 return updatedItem;

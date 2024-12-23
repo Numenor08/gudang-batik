@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
-import { useAuth } from "@/hooks/AuthProvider";
 
 function AddSupplierDistriForm({type}) {
     const [name, setName] = useState('');
@@ -16,7 +15,6 @@ function AddSupplierDistriForm({type}) {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const { token } = useAuth();
 
     const handleAddSupplier = async (event) => {
         event.preventDefault();
@@ -34,7 +32,6 @@ function AddSupplierDistriForm({type}) {
             const response = await axiosInstance.post(`/api/${type}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
                 }
             });
             setSuccessMessage(response.data.message);

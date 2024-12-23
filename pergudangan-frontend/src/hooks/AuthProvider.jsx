@@ -15,28 +15,19 @@ const AuthProvider = ({ children }) => {
             localStorage.setItem('accessToken', accessToken);
             const decodedToken = jwtDecode(accessToken);
             setRole(decodedToken.data.role);
-        } else {
-            setRole(null);
         }
     }, []);
 
     const removeToken = useCallback(() => {
         setToken(null);
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('userImg')
         setRole(null);
     }, []);
-
-    const isTokenExpired = (token) => {
-        if (!token) return true;
-        const decodedToken = jwtDecode(token);
-        const currentTime = Date.now() / 1000;
-        return decodedToken.exp < currentTime;
-    };
-
+    
     useEffect(() => {
         const fetchAccessToken = async () => {
-            if (isLogin) return;
-            if (token) return;
+            if (isLogin || token) return;
             try {
                 const { data } = await axiosInstance.post('/api/auth/refresh-token');
                 console.log("Fetching access token");
@@ -47,13 +38,8 @@ const AuthProvider = ({ children }) => {
             }
         };
 
-        if (isTokenExpired(token)) {
-            removeToken();
-        }
-
         fetchAccessToken();
     }, [token, saveToken, removeToken, isLogin]);
-
     useEffect(() => {
         if (token) {
             try {
@@ -61,7 +47,7 @@ const AuthProvider = ({ children }) => {
                 setRole(decodedToken.data.role);
             } catch (error) {
                 console.error('Failed to decode token:', error);
-                removeToken();
+                // removeToken();
             }
         }
     }, [token, removeToken]);

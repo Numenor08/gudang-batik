@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { startTransition } from "react";
-import { useAuth } from "@/hooks/AuthProvider";
 import useSWR, { mutate } from "swr";
 import axiosInstance from "@/utils/axiosInstance";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
@@ -20,7 +19,6 @@ function AddItemForm() {
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const { data: Categories } = useSWR('/api/categories');
-    const { token } = useAuth();
 
     const handleAddItem = async (event) => {
         event.preventDefault();
@@ -38,7 +36,6 @@ function AddItemForm() {
             const response = await axiosInstance.post('/api/batik', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
                 },
             })
             setSuccessMessage(response.data.message);

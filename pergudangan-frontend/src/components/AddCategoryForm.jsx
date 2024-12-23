@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
-import { useAuth } from "@/hooks/AuthProvider";
 
 function AddCategoryForm() {
     const [name, setName] = useState('');
@@ -11,18 +10,13 @@ function AddCategoryForm() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const { token } = useAuth();
 
     const handleAddCategory = async (event) => {
         event.preventDefault();
         setLoading(true);
         try {
             const formData = { name, description };
-            const response = await axiosInstance.post('/api/categories', formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-            });
+            const response = await axiosInstance.post('/api/categories', formData);
             setSuccessMessage(response.data.message);
             setLoading(false);
             setName('');

@@ -84,9 +84,9 @@ export const updateBatik = (req, res) => {
         const oldImgPath = result[0].img;
         const batikData = { name, color, size, stock, min_stock, category_id };
         if (img) {
-            updatedData.img = img;
+            batikData.img = img;
         } else {
-            updatedData.img = oldImgPath;
+            batikData.img = oldImgPath;
         }
 
         Batik.update(batikId, batikData, (err, updateResult) => {
