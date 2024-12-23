@@ -110,7 +110,7 @@ export function DataTableReport({ onEdit, onDelete, className }) {
         created_at: new Date(report.created_at).toLocaleDateString('en-GB')
     }));
     if (error) return <div>Error loading data: {error.message}</div>;
-
+    
     return (
         <DataTable
             className={className}
@@ -119,5 +119,15 @@ export function DataTableReport({ onEdit, onDelete, className }) {
             onEdit={onEdit}
             onDelete={onDelete}
         />
+    );
+}
+
+export function DataTableError({columns=userColumns}) {
+    const dataError = [{}];
+    return (
+        <>
+        <h2 className="mb-6 opacity-50">Failed fethching data, try to refresh the page!</h2>
+        <DataTable className="container" columns={columns} data={dataError} />
+        </>
     );
 }

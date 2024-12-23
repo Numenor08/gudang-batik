@@ -1,12 +1,13 @@
 import { useEffect, useState, Suspense } from "react";
 import { useUrl } from '@/hooks/UrlProvider';
-import { DataTableUser } from "@/components/MyDataTables";
+import { DataTableUser, DataTableError } from "@/components/MyDataTables";
 import EditUserForm from "@/components/EditUserForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
 import MyBreadCrumb from "@/components/MyBreadCrumb";
 import { SkeletonTable } from "@/components/skeleton/MySkeleton";
+import { ErrorBoundary } from "react-error-boundary";
 
 function ManageUser({ className }) {
     const urlHere = "/dashboard/management/user";
@@ -46,9 +47,11 @@ function ManageUser({ className }) {
         />
         <div className={className}>
             <h1 className="text-3xl font-bold">User Management</h1>
-            <Suspense fallback={<SkeletonTable loopCol={5} loopRow={8} height={8} />}>
-                <DataTableUser onEdit={handleEdit} onDelete={handleDelete} />
-            </Suspense>
+            <ErrorBoundary fallback={<DataTableError />}>
+                <Suspense fallback={<SkeletonTable loopCol={5} loopRow={8} height={8} />}>
+                    <DataTableUser onEdit={handleEdit} onDelete={handleDelete} />
+                </Suspense>
+            </ErrorBoundary>
             {selectedUser && (
                 <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
                     <DialogContent>

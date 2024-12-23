@@ -1,6 +1,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { UrlContext, useUrl } from '@/hooks/UrlProvider';
-import { DataTableSupplier } from "@/components/MyDataTables";
+import { DataTableSupplier, DataTableError } from "@/components/MyDataTables";
+import { supplierColumns } from "@/components/Columns";
 import AddSupplierDistriForm from "@/components/AddSupplierDistriForm";
 import EditSupplierDistriForm from "@/components/EditSupplierDistriForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
@@ -9,6 +10,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
 import MyBreadCrumb from "@/components/MyBreadCrumb";
 import { SkeletonTable } from "@/components/skeleton/MySkeleton";
+import { ErrorBoundary } from "react-error-boundary";
 
 function ManageSupplier({ className }) {
     const urlHere = "/dashboard/management/supplier";
@@ -61,9 +63,11 @@ function ManageSupplier({ className }) {
                         <AddSupplierDistriForm type="suppliers" />
                     </DialogContent>
                 </Dialog>
-                <Suspense fallback={<SkeletonTable loopCol={7} loopRow={10} height={8} />}>
-                    <DataTableSupplier onEdit={handleEdit} onDelete={handleDelete} />
-                </Suspense>
+                <ErrorBoundary fallback={<DataTableError columns={supplierColumns} />}>
+                    <Suspense fallback={<SkeletonTable loopCol={7} loopRow={10} height={8} />}>
+                        <DataTableSupplier onEdit={handleEdit} onDelete={handleDelete} />
+                    </Suspense>
+                </ErrorBoundary>
                 {selectedSupplier && (
                     <Dialog open={!!selectedSupplier} onOpenChange={() => setSelectedSupplier(null)}>
                         <DialogContent>

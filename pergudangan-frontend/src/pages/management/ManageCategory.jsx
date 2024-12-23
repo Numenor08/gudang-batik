@@ -1,7 +1,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useUrl } from '@/hooks/UrlProvider';
 import MyBreadCrumb from "@/components/MyBreadCrumb";
-import { DataTableCategory } from "@/components/MyDataTables";
+import { DataTableCategory, DataTableError } from "@/components/MyDataTables";
 import AddCategoryForm from "@/components/AddCategoryForm";
 import EditCategoryForm from "@/components/EditCategoryForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAuth } from "@/hooks/AuthProvider";
 import { SkeletonTable } from "@/components/skeleton/MySkeleton";
+import { ErrorBoundary } from "react-error-boundary";
+import { categoryColumns } from "@/components/Columns";
 
 const ManageCategory = ({ className }) => {
     const urlHere = "/dashboard/management/category";
@@ -61,9 +63,11 @@ const ManageCategory = ({ className }) => {
                             <AddCategoryForm />
                         </DialogContent>
                     </Dialog>
-                    <Suspense fallback={<SkeletonTable loopRow={10} loopCol={3} height={8} className="h-full w-full" />}>
-                        <DataTableCategory onEdit={handleEdit} onDelete={handleDelete} />
-                    </Suspense>
+                    <ErrorBoundary fallback={<DataTableError columns={categoryColumns}/>}>
+                        <Suspense fallback={<SkeletonTable loopRow={10} loopCol={3} height={8} className="h-full w-full" />}>
+                            <DataTableCategory onEdit={handleEdit} onDelete={handleDelete} />
+                        </Suspense>
+                    </ErrorBoundary>
                     {selectedCategory && (
                         <Dialog open={!!selectedCategory} onOpenChange={() => setSelectedCategory(null)}>
                             <DialogContent>

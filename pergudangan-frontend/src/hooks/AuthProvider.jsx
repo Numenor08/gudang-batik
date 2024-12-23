@@ -7,6 +7,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('accessToken'));
     const [role, setRole] = useState(null);
+    const [isLogin, setIsLogin] = useState(true);
 
     const saveToken = useCallback((accessToken) => {
         setToken(accessToken);
@@ -25,11 +26,19 @@ const AuthProvider = ({ children }) => {
         setRole(null);
     }, []);
 
+    const isTokenExpired = (token) => {
+        if (!token) return true;
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        return decodedToken.exp < currentTime;
+    };
     useEffect(() => {
         const fetchAccessToken = async () => {
-            if (token) return;
+            if (token && !isTokenExpired(token)) return;
+            if (isLogin) return;
             try {
                 const { data } = await axiosInstance.post('/api/auth/refresh-token');
+                console.log("Fetching access token");
                 saveToken(data.accessToken);
             } catch (error) {
                 console.error('Failed to refresh token:', error);
@@ -37,9 +46,7 @@ const AuthProvider = ({ children }) => {
             }
         };
 
-        if (document.cookie.includes('refreshToken')) {
-            fetchAccessToken();
-        }
+        fetchAccessToken();
     }, [token, saveToken, removeToken]);
 
     useEffect(() => {
@@ -60,8 +67,10 @@ const AuthProvider = ({ children }) => {
             saveToken,
             role,
             removeToken,
+            isLogin,
+            setIsLogin
         }),
-        [token, role, saveToken, removeToken]
+        [token, role, saveToken, removeToken, isLogin, setIsLogin]
     );
 
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

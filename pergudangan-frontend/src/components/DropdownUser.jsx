@@ -14,7 +14,7 @@ import axiosInstance from "@/utils/axiosInstance"
 
 const DropdownUser = () => {
     const navigate = useNavigate()
-    const { removeToken } = useAuth()
+    const { removeToken, setIsLogin } = useAuth()
     const img = localStorage.getItem('userImg')
     const VITE_API_URL = import.meta.env.VITE_API_URL
 
@@ -25,6 +25,8 @@ const DropdownUser = () => {
             console.error('Logout error:', error)
         } finally {
             removeToken()
+            localStorage.removeItem('userImg')
+            setIsLogin(true);
             navigate('/')
         }
     }

@@ -32,7 +32,6 @@ export const deleteRefreshToken = (token) => {
                 console.log(err);
                 return reject(new Error('Error deleting refresh token: ' + err.message));
             }
-            console.log("Refresh token deleted");
             resolve(result);
         });
     });

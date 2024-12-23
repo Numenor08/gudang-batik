@@ -12,12 +12,14 @@ import MyBreadCrumb from "@/components/MyBreadCrumb";
 import { RefreshCw } from "lucide-react";
 import { ChartArea } from "@/components/ChartsArea";
 import { ChartPie } from "@components/ChartsPie";
-import { DataTableBatik, DataTableTransaction } from "@/components/MyDataTables";
+import { DataTableBatik, DataTableTransaction, DataTableError } from "@/components/MyDataTables";
 import { UrlContext, useUrl } from '@/hooks/UrlProvider';
 import { useEffect } from "react";
 import { Suspense } from "react";
 import { SkeletonChartPie, SkeletonChartArea, SkeletonTable } from "@skeleton/MySkeleton";
 import useSWR from "swr";
+import { ErrorBoundary } from "react-error-boundary";
+import { batik, transaction } from "@/components/Columns";
 
 const KpiCard = ({ label, data }) => {
     return (
@@ -89,31 +91,41 @@ function Item() {
             <div className="m-8 flex flex-col gap-8">
                 <div className="flex-1 flex flex-col cs:flex-row gap-4 flex-wrap">
                     <div className="flex-1 min-w-80">
-                        <Suspense fallback={<SkeletonChartArea />}>
-                            <CardStatistic />
-                        </Suspense>
+                        <ErrorBoundary fallback={<SkeletonChartArea />}>
+                            <Suspense fallback={<SkeletonChartArea />}>
+                                <CardStatistic />
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
                     <div className="flex-1 min-w-80">
-                        <Suspense fallback={<SkeletonChartArea />}>
-                            <ChartArea />
-                        </Suspense>
+                        <ErrorBoundary fallback={<SkeletonChartArea />}>
+                            <Suspense fallback={<SkeletonChartArea />}>
+                                <ChartArea />
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
                     <div className="flex-1">
-                        <Suspense fallback={<SkeletonChartPie />}>
-                            <ChartPie />
-                        </Suspense>
+                        <ErrorBoundary fallback={<SkeletonChartPie />}>
+                            <Suspense fallback={<SkeletonChartPie />}>
+                                <ChartPie />
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 cs:grid-cols-2 gap-6">
                     <div className="my-4">
-                        <Suspense fallback={<SkeletonTable loopCol={4} className="h-full w-full" />}>
-                            <DataTableBatik className="w-full" />
-                        </Suspense>
+                        <ErrorBoundary fallback={<DataTableError columns={batik} />}>
+                            <Suspense fallback={<SkeletonTable loopCol={4} className="h-full w-full" />}>
+                                <DataTableBatik className="w-full" />
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
                     <div className="my-4">
-                        <Suspense fallback={<SkeletonTable loopCol={4} className="h-full w-full" />}>
-                            <DataTableTransaction className="w-full" />
-                        </Suspense>
+                        <ErrorBoundary fallback={<DataTableError columns={transaction} />}>
+                            <Suspense fallback={<SkeletonTable loopCol={4} className="h-full w-full" />}>
+                                <DataTableTransaction className="w-full" />
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
                 </div>
             </div>

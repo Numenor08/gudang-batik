@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ProtectedLogin from "@/components/ProtectedLogin";
 import Dashboard from "@/pages/Dashboard";
 import Item from "@/pages/Item";
 import Transaction from "@/pages/Transaction";
-import Supplier from "@/pages/Supplier";
 import Report from "@/pages/Report";
 import Setting from "@/pages/Setting";
 import Profile from "@/pages/Profile";
@@ -44,13 +44,15 @@ function AppRoutes() {
             value={{
                 fetcher: (url) => fetcher(url, token),
                 suspense: true,
-                refreshInterval: 2000,
+                refreshInterval: 5000,
             }}>
             <Router>
                 <Routes>
-                    <Route path="" element={<LoginPage />}></Route>
-                    <Route path="register" element={<RegisterPage />}></Route>
-                    <Route path="resetPassword" element={<ForgotPassword />}></Route>
+                    <Route element={<ProtectedLogin />}>
+                        <Route path="" element={<LoginPage />}></Route>
+                        <Route path="register" element={<RegisterPage />}></Route>
+                        <Route path="resetPassword" element={<ForgotPassword />}></Route>
+                    </Route>
                     <Route element={<ProtectedRoute />}>
                         <Route path="/dashboard/*" element={<Dashboard />}>
                             <Route path="" element={<Item />} />
@@ -62,7 +64,6 @@ function AppRoutes() {
                                 <Route path="user" element={<ManageUser className="m-8 flex flex-col gap-8"/>} />
                             </Route>
                             <Route path="transaction" element={<Transaction />} />
-                            <Route path="supplier" element={<Supplier />} />
                             <Route path="report" element={<Report />} />
                             <Route path="setting" element={<Setting />} />
                             <Route path="profile" element={<Profile />} />
