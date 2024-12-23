@@ -15,7 +15,7 @@ function EditUserForm({ user, onClose }) {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const { token, setImg } = useAuth();
+    const { token } = useAuth();
 
     const handleEditUser = async (e) => {
         e.preventDefault();
@@ -38,7 +38,7 @@ function EditUserForm({ user, onClose }) {
             });
             console.log("Response: ", response);
             if (response.data.img && response.status === 200) {
-                setImg(response.data.img);
+                localStorage.setItem('userImg', response.data.img);
             }
 
             setSuccessMessage('User updated successfully.');

@@ -32,10 +32,11 @@ const AuthProvider = ({ children }) => {
         const currentTime = Date.now() / 1000;
         return decodedToken.exp < currentTime;
     };
+
     useEffect(() => {
         const fetchAccessToken = async () => {
-            if (token && !isTokenExpired(token)) return;
             if (isLogin) return;
+            if (token) return;
             try {
                 const { data } = await axiosInstance.post('/api/auth/refresh-token');
                 console.log("Fetching access token");
@@ -46,8 +47,12 @@ const AuthProvider = ({ children }) => {
             }
         };
 
+        if (isTokenExpired(token)) {
+            removeToken();
+        }
+
         fetchAccessToken();
-    }, [token, saveToken, removeToken]);
+    }, [token, saveToken, removeToken, isLogin]);
 
     useEffect(() => {
         if (token) {

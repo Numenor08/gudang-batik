@@ -199,7 +199,7 @@ export const updateUser = [checkAdminRole, (req, res) => {
                     res.json({ message: 'User data updated successfully', img: img });
                 });
             } else {
-                logActivity(req.user.userID, `Updated User with ID ${id}`);
+                logActivity(req.user.userId, `Updated User with ID ${id}`);
                 res.json({ message: 'User data updated successfully', img: img || oldImgPath });
             }
         });
