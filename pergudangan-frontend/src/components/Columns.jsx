@@ -563,3 +563,49 @@ export const categoryColumns = [
         },
     },
 ];
+
+export const reportColumns = [
+    {
+        accessorKey: "img",
+        header: "Image Profile",
+        cell: ({ row }) => (
+            <img src={`${VITE_API_URL}/${row.original.img}`} alt={row.original.username} className="w-8 h-8 rounded-full object-cover" />
+        ),
+    },
+    {
+        accessorKey: "username",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Username
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
+    {
+        accessorKey: "action",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Activity
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
+    {
+        accessorKey: "created_at",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Date
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
+];

@@ -44,7 +44,7 @@ function AppRoutes() {
             value={{
                 fetcher: (url) => fetcher(url, token),
                 suspense: true,
-                refreshInterval: 5000,
+                refreshInterval: 2000,
             }}>
             <Router>
                 <Routes>

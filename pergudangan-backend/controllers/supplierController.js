@@ -38,7 +38,7 @@ export const createSupplier = (req, res) => {
             return res.status(500).json({ message: 'Error creating supplier', error: err });
         }
 
-        logActivity(req.user.userId, `Created Supplier with ID ${result.insertId}`);
+        logActivity(req.user.userId, `Created Supplier: ${supplierData.name}`);
         res.status(201).json({ message: 'Supplier created successfully', supplierId: result.insertId });
     });
 };
@@ -79,11 +79,11 @@ export const updateSupplier = (req, res) => {
                         return res.status(500).json({ message: 'Error deleting old supplier image', error: unlinkErr });
                     }
 
-                    logActivity(req.user.userId, `Updated Supplier with ID ${supplierId}`);
+                    logActivity(req.user.userId, `Updated Supplier ${supplierData .name || supplierId}`);
                     res.json({ message: 'Supplier updated successfully' });
                 });
             } else {
-                logActivity(req.user.userId, `Updated Supplier with ID ${supplierId}`);
+                logActivity(req.user.userId, `Updated Supplier ${supplierData.name || supplierId}`);
                 res.json({ message: 'Supplier updated successfully' });
             }
         });

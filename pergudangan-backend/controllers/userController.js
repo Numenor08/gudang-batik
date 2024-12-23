@@ -234,11 +234,11 @@ export const deleteUser = [checkAdminRole, (req, res) => {
                         return res.status(500).json({ message: 'Error deleting batik image', error: unlinkErr });
                     }
 
-                    logActivity(req.user.userID, `Deleted Batik with ID ${batikId}`);
+                    logActivity(req.user.userID, `Deleted Batik with id ${batikId}`);
                     res.json({ message: 'Batik deleted successfully' });
                 });
             } else {
-                logActivity(req.user.userID, `Deleted Batik with ID ${batikId}`);
+                logActivity(req.user.userID, `Deleted Batik with id ${batikId}`);
                 res.json({ message: 'Batik deleted successfully' });
             }
         });

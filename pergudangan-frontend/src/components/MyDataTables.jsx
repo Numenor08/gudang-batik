@@ -1,5 +1,5 @@
 import DataTable from "@/components/DataTable";
-import { batik, transaction, batikColumns, categoryColumns, supplierColumns, userColumns, transaction2 } from "@/components/Columns";
+import { batik, transaction, batikColumns, categoryColumns, supplierColumns, userColumns, transaction2, reportColumns } from "@/components/Columns";
 import useSWR from 'swr';
 
 export function DataTableBatik({className}) {
@@ -97,6 +97,25 @@ export function DataTableCategory({ onEdit, onDelete, className }) {
             className={className}
             columns={categoryColumns}
             data={categories || []}
+            onEdit={onEdit}
+            onDelete={onDelete}
+        />
+    );
+}
+
+export function DataTableReport({ onEdit, onDelete, className }) {
+    const { data: report, error } = useSWR(`/api/logs`);
+    const formattedReport = report?.map(report => ({
+        ...report,
+        created_at: new Date(report.created_at).toLocaleDateString('en-GB')
+    }));
+    if (error) return <div>Error loading data: {error.message}</div>;
+
+    return (
+        <DataTable
+            className={className}
+            columns={reportColumns}
+            data={formattedReport || []}
             onEdit={onEdit}
             onDelete={onDelete}
         />

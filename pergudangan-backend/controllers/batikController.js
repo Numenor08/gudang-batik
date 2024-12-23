@@ -63,7 +63,7 @@ export const createBatik = (req, res) => {
             return res.status(500).json({ message: 'Error creating batik', error: err });
         }
 
-        logActivity(req.user.userId, `Created Batik with ID ${result.insertId}`);
+        logActivity(req.user.userId, `Created Batik ${batikData.name}`);
         res.status(201).json({ message: 'Batik created successfully'});
     });
 };
@@ -104,11 +104,11 @@ export const updateBatik = (req, res) => {
                         return res.status(500).json({ message: 'Error deleting old batik image', error: unlinkErr });
                     }
 
-                    logActivity(req.user.userId, `Updated Batik with ID ${batikId}`);
+                    logActivity(req.user.userId, `Updated Batik ${batikId.name || batikId}`);
                     res.json({ message: 'Batik updated successfully' });
                 });
             } else {
-                logActivity(req.user.userId, `Updated Batik with ID ${batikId}`);
+                logActivity(req.user.userId, `Updated Batik ${batikId.name || batikId}`);
                 res.json({ message: 'Batik updated successfully' });
             }
         });

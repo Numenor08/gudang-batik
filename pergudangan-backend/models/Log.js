@@ -8,7 +8,7 @@ class Log {
     }
 
     static getAll(callback) {
-        const query = 'SELECT * FROM logs';
+        const query = 'SELECT logs.*, users.username as username , users.img as img FROM logs LEFT JOIN users ON user_id = users.id';
         db.query(query, callback);
     }
 }

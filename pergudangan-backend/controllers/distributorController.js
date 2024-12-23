@@ -40,7 +40,7 @@ export const createDistributor = (req, res) => {
             return res.status(500).json({ message: 'Error creating distributor', error: err });
         }
 
-        logActivity(req.user.userId, `Created Distributor with ID ${result.insertId}`);
+        logActivity(req.user.userId, `Created Distributor: ${distributorData.name}`);
         res.status(201).json({ message: 'Distributor created successfully', distributorId: result.insertId });
     });
 };
@@ -81,11 +81,11 @@ export const updateDistributor = (req, res) => {
                         return res.status(500).json({ message: 'Error deleting old distributor image', error: unlinkErr });
                     }
 
-                    logActivity(req.user.userId, `Updated Distributor with ID ${distributorId}`);
+                    logActivity(req.user.userId, `Updated Distributor ${distributorData.name || distributorId}`);
                     res.json({ message: 'Distributor updated successfully' });
                 });
             } else {
-                logActivity(req.user.userId, `Updated Distributor with ID ${distributorId}`);
+                logActivity(req.user.userId, `Updated Distributor ${distributorData.name || distributorId}`);
                 res.json({ message: 'Distributor updated successfully' });
             }
         });
