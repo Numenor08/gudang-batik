@@ -222,7 +222,7 @@ export const updateUser = (req, res) => {
                     if (unlinkErr) {
                         return res.status(500).json({ message: 'Error deleting old user image', error: unlinkErr });
                     }
-                    logActivity(req.user.userID, `Updated User with ID ${id}`);
+                    logActivity(req.user.userId, `Updated User with ID ${id}`);
                     res.json({ message: 'User data updated successfully', img: img });
                 });
             } else {
@@ -304,11 +304,11 @@ export const deleteUser = [checkAdminRole, (req, res) => {
                             return res.status(500).json({ message: 'Error deleting user image', error: unlinkErr });
                         }
 
-                        logActivity(req.user.userID, `Deleted User with ID ${id}`);
+                        logActivity(req.user.userId, `Deleted User with ID ${id}`);
                         res.json({ message: 'User deleted successfully' });
                     });
                 } else {
-                    logActivity(req.user.userID, `Deleted User with ID ${id}`);
+                    logActivity(req.user.userId, `Deleted User with ID ${id}`);
                     res.json({ message: 'User deleted successfully' });
                 }
             });

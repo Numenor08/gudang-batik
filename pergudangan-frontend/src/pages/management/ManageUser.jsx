@@ -13,7 +13,7 @@ function ManageUser({ className }) {
     const urlHere = "/dashboard/management/user";
     const { setUrl } = useUrl();
     const [selectedUser, setSelectedUser] = useState(null);
-    const { token } = useAuth();
+    const {  userId } = useAuth();
 
     useEffect(() => {
         setUrl(urlHere);
@@ -26,11 +26,7 @@ function ManageUser({ className }) {
     const handleDelete = async (id) => {
         if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
             try {
-                await axiosInstance.delete(`/api/auth/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                await axiosInstance.delete(`/api/auth/${id}`);
                 // Refresh data or handle delete logic
             } catch (error) {
                 console.error('Gagal menghapus pengguna:', error);

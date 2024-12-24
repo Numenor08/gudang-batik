@@ -44,6 +44,6 @@ app.use('/api/distributors', verifyToken, distributorRoutes);
 app.use('/api/suppliers', verifyToken, supplierRoutes);
 app.use('/api/categories', verifyToken, categoryRoutes);
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server running on port ${process.env.PORT}`);
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server running on port ${process.env.PORT || 3000}`);
 });
