@@ -9,13 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/AuthProvider";
 import useSWR, { mutate } from 'swr';
 import axiosInstance from '@/utils/axiosInstance';
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import MyAlertDialog from '@/components/MyAlertDialog';
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 export default function ProfileForm() {
     const [imagePreview, setImagePreview] = useState(null);
     const [wantToEdit, setWantToEdit] = useState(false);
+    const [wantToChangePassword, setWantToChangePassword] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -28,6 +29,7 @@ export default function ProfileForm() {
     const [success, setSuccess] = useState('');
     const { userId } = useAuth();
     const { data: user } = useSWR(`/api/auth/${userId}`);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -63,44 +65,62 @@ export default function ProfileForm() {
     const handleSubmit = async () => {
         setError('');
         setSuccess('');
-
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
+    
+        if (wantToChangePassword) {
+            if (formData.password !== formData.confirmPassword) {
+                setError('Passwords do not match');
+                return;
+            }
+    
+            if (!formData.password || !formData.confirmPassword) {
+                setError('Passwords must exist');
+                return;
+            }
         }
-
+    
         const form = new FormData();
         form.append('username', formData.username);
         form.append('email', formData.email);
         form.append('role', formData.role);
-        form.append('password', formData.password);
+        if (wantToChangePassword) {
+            form.append('password', formData.password);
+        }
         if (formData.img instanceof File) {
             form.append('img', formData.img);
         }
-
+        console.log(...form);
+    
+        const endpoint = wantToChangePassword ? `/api/auth/user/${userId}` : `/api/auth/${userId}`;
         try {
+
             // Optimistically update the UI
-            mutate(`/api/auth/${userId}`, { ...user, ...formData }, false);
-
-            const response = await axiosInstance.put(`/api/auth/${userId}`, form);
-
+            mutate(endpoint, { ...user, ...formData }, false);
+    
+            const response = await axiosInstance.put(endpoint, form);
+    
             if (response.status !== 200) {
                 throw new Error('Failed to update profile');
             }
-
+    
             setSuccess('Profile updated successfully');
             // Revalidate the data
-            mutate(`/api/auth/${userId}`);
+            mutate(endpoint);
         } catch (error) {
             setError(error.message);
             // Rollback the optimistic update
-            mutate(`/api/auth/${userId}`);
+            mutate(endpoint);
         }
     };
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const handleEditPassword = (checked) => {
+        setSuccess('');
+        setError('');
+        setWantToChangePassword(checked);
+    };
 
     const handleEditToggle = (checked) => {
+        setSuccess('');
+        setError('');
         setWantToEdit(checked);
     };
 
@@ -146,13 +166,23 @@ export default function ProfileForm() {
                         {/* Right side - Form Fields */}
                         <div className="w-full md:w-2/3">
                             <form className="space-y-6">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="wantToEdit"
-                                        checked={wantToEdit}
-                                        onCheckedChange={handleEditToggle}
-                                    />
-                                    <Label htmlFor="wantToEdit">Want to edit?</Label>
+                                <div className="flex items-center gap-6 space-x-2">
+                                    <div className='flex items-center gap-1'>
+                                        <Checkbox
+                                            id="wantToEdit"
+                                            checked={wantToEdit}
+                                            onCheckedChange={handleEditToggle}
+                                        />
+                                        <Label htmlFor="wantToEdit">Want to edit?</Label>
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <Checkbox
+                                            id="wantToChangePassword"
+                                            checked={wantToChangePassword}
+                                            onCheckedChange={handleEditPassword}
+                                        />
+                                        <Label htmlFor="wantToChangePassword">Want to change password?</Label>
+                                    </div>
                                 </div>
 
                                 {error && <p className="text-red-500">{error}</p>}
@@ -175,33 +205,26 @@ export default function ProfileForm() {
 
                                 <div>
                                     <Label htmlFor="password">Password</Label>
-                                    <Input id="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="Enter your password" disabled={!wantToEdit} className={`transition-opacity duration-300 ease-in-out ${wantToEdit ? 'opacity-100' : 'opacity-50'}`} />
+                                    <Input id="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="Enter your password" disabled={!wantToChangePassword} className={`transition-opacity duration-300 ease-in-out ${wantToChangePassword ? 'opacity-100' : 'opacity-50'}`} autoComplete="off"/>
                                 </div>
 
-                                <div className={`transition-all duration-300 ease-in-out ${wantToEdit ? 'opacity-100 max-h-full' : 'opacity-0 max-h-0 overflow-hidden'}`}>
-                                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                                    <Input id="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleInputChange} placeholder="Confirm your password" />
+                                <div className={`transition-all duration-300 ease-in-out ${wantToChangePassword ? 'opacity-100 max-h-full' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+                                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                                    <Input id="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleInputChange} placeholder="Confirm your password" autoComplete="off"/>
                                 </div>
 
-                                <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                                    <AlertDialogTrigger asChild>
-                                        <Button type="button" className="transition-all duration-300 ease-in-out w-full" disabled={!wantToEdit}>
-                                            Save Changes
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Confirm Edit</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                Are you sure you want to save changes to your profile?
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel onClick={cancelEdit}>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={confirmEdit}>Confirm</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+                                <MyAlertDialog
+                                    open={isDialogOpen}
+                                    setOpen={setIsDialogOpen}
+                                    cancel={cancelEdit}
+                                    confirm={confirmEdit}
+                                    title="Confirm Edit"
+                                    message="Are you sure you want to save changes to your profile?"
+                                >
+                                    <Button type="button" className="transition-all duration-300 ease-in-out w-full" disabled={!wantToEdit}>
+                                        Save Changes
+                                    </Button>
+                                </MyAlertDialog>
                             </form>
                         </div>
                     </div>

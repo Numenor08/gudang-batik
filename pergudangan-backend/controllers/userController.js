@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { logActivity } from './logController.js';
 import { addRefreshToken, findRefreshToken, deleteRefreshToken } from '../models/refreshTokenModel.js';
+import Log from '../models/Log.js';
 
 export const getAllUser = [checkAdminRole, (req, res) => {
     User.getAll((err, result) => {
@@ -26,7 +27,13 @@ export const getUserById = (req, res) => {
         if (result.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.json(result[0]);
+        res.json({
+            id: result[0].id,
+            username: result[0].username,
+            role: result[0].role,
+            email: result[0].email,
+            img: result[0].img
+        });
     });
 }
 
@@ -103,7 +110,7 @@ export const loginUser = (req, res) => {
             }
 
             if (!isMatch) {
-                return res.status(401).json({ message: 'Invalid credentials' });
+                return res.status(401).json({ message: 'Invalid Password' });
             }
 
             const accessToken = jwt.sign({ data: { userId: user.id, role: user.role } }, process.env.JWT_SECRET, { expiresIn: '15m' });
@@ -226,6 +233,43 @@ export const updateUser = (req, res) => {
     });
 };
 
+export const updateUserWithPassword = (req, res) => {
+    const { id } = req.params;
+    const { username, role, email, password } = req.body; // password adalah password baru
+    const img = req.file ? req.file.path : null;
+
+    User.findById(id, (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error fetching user data', error: err });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = result[0];
+
+        // Hash password baru
+        bcrypt.hash(password, 10, async (err, hashedPassword) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error hashing password', error: err });
+            }
+
+            const updatedData = { username, role, email, password: hashedPassword, img: img || user.img };
+
+            User.updateUserWithPassword(id, updatedData, async (err, updatedResult) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error updating user data', error: err });
+                }
+                if (updatedResult.affectedRows === 0) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
+
+                res.json({ message: 'User data updated successfully', img: img || user.img });
+            });
+        });
+    });
+};
+
 export const deleteUser = [checkAdminRole, (req, res) => {
     const { id } = req.params;
 
@@ -239,31 +283,38 @@ export const deleteUser = [checkAdminRole, (req, res) => {
 
         const imgPath = result[0].img;
 
-        User.deleteUser(id, (err) => {
+        // Hapus log terkait
+        Log.deleteByUserId(id, (err) => {
             if (err) {
-                return res.status(500).json({ message: 'Error deleting user', error: err });
-            }
-            if (deleteResult.affectedRows === 0) {
-                return res.status(404).json({ message: 'Batik not found' });
+                return res.status(500).json({ message: 'Error deleting user logs', error: err });
             }
 
-            if (imgPath) {
-                const fullPath = path.resolve(imgPath);
-                fs.unlink(fullPath, (unlinkErr) => {
-                    if (unlinkErr) {
-                        return res.status(500).json({ message: 'Error deleting batik image', error: unlinkErr });
-                    }
+            User.delete(id, (err, deleteResult) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error deleting user', error: err });
+                }
+                if (deleteResult.affectedRows === 0) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
 
-                    logActivity(req.user.userID, `Deleted Batik with id ${batikId}`);
-                    res.json({ message: 'Batik deleted successfully' });
-                });
-            } else {
-                logActivity(req.user.userID, `Deleted Batik with id ${batikId}`);
-                res.json({ message: 'Batik deleted successfully' });
-            }
+                if (imgPath) {
+                    const fullPath = path.resolve(imgPath);
+                    fs.unlink(fullPath, (unlinkErr) => {
+                        if (unlinkErr) {
+                            return res.status(500).json({ message: 'Error deleting user image', error: unlinkErr });
+                        }
+
+                        logActivity(req.user.userID, `Deleted User with ID ${id}`);
+                        res.json({ message: 'User deleted successfully' });
+                    });
+                } else {
+                    logActivity(req.user.userID, `Deleted User with ID ${id}`);
+                    res.json({ message: 'User deleted successfully' });
+                }
+            });
         });
-    })
-}]
+    });
+}];
 
 export const refreshToken = async (req, res) => {
     const { refreshToken } = req.cookies;

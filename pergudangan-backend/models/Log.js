@@ -11,6 +11,10 @@ class Log {
         const query = 'SELECT logs.*, users.username as username , users.img as img FROM logs LEFT JOIN users ON user_id = users.id';
         db.query(query, callback);
     }
+    static deleteByUserId(userId, callback) {
+        const query = 'DELETE FROM logs WHERE user_id = ?';
+        db.query(query, [userId], callback);
+    }
 }
 
 export default Log;

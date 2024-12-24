@@ -3,8 +3,8 @@ import { logActivity } from './logController.js';
 
 export const createTransaction = (req, res) => {
     const { batik_id, type, quantity, supplier_id, distributor_id } = req.body;
-    const user_id = req.user.userId;
-    const transactionData = { batik_id, user_id, type, quantity, supplier_id, distributor_id };
+    // const user_id = req.user.userId;
+    const transactionData = { batik_id, type, quantity, supplier_id, distributor_id };
 
     Transaction.create(transactionData, (err, result) => {
         if (err) {

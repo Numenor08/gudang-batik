@@ -31,6 +31,11 @@ axiosInstance.interceptors.response.use(
 
         // Check if the error is 401 and the request is not a retry
         if (error.response?.status === 401 && !originalRequest._retry) {
+            // Check if the original request is a login request
+            if (originalRequest.url.includes('/api/auth/login')) {
+                return Promise.reject(error);
+            }
+
             originalRequest._retry = true;
 
             try {
@@ -47,7 +52,7 @@ axiosInstance.interceptors.response.use(
                 // Save the new access token
                 localStorage.setItem('accessToken', accessToken);
 
-                // Retry the requess with the new access token
+                // Retry the request with the new access token
                 originalRequest.headers.Authorization = `Bearer ${accessToken}`;
                 return axiosInstance(originalRequest);
 
@@ -55,13 +60,13 @@ axiosInstance.interceptors.response.use(
                 // If the refresh token fails, remove the access token
                 console.error('Failed to refresh token:', error);
                 localStorage.removeItem('accessToken');
-                localStorage.removeItem('userImg')
+                localStorage.removeItem('userImg');
                 window.location.href = '/';
                 return Promise.reject(error);
             }
         }
         return Promise.reject(error);
     }
-)
+);
 
 export default axiosInstance;

@@ -22,11 +22,7 @@ function AppRoutes() {
     const { token } = useAuth();
     const fetcher = async (url) => {
         try {
-            const response = await axiosInstance.get(url, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await axiosInstance.get(url);
             return response.data;
         } catch (error) {
             if (error.response) {

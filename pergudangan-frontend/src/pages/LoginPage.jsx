@@ -35,17 +35,11 @@ function LoginPage({ className, ...props }) {
                 password,
             });
             const data = response.data;
-            if (response.status === 200) {
-                saveToken(data.accessToken);
-                localStorage.setItem('userImg', data.user.img);
-                navigate('/dashboard');
-            } else {
-                setErrorMessage(data.message || 'Login gagal, coba lagi.');
-            }
+            saveToken(data.accessToken);
+            navigate('/dashboard');
         } catch (error) {
             console.error('Login error:', error);
-            setErrorMessage('Terjadi kesalahan, silakan coba lagi.');
-        } finally {
+            setErrorMessage(error.response.data.message);
             setLoading(false);
         }
     };

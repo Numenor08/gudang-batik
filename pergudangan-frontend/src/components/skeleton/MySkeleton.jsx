@@ -65,7 +65,7 @@ function SkeletonTable({ className, loopRow = 10, loopCol = 5, height = 4 }) {
                     <div key={index} className="flex items-center space-x-2">
                         <Skeleton className={`w-8 h-${height}`} />
                         {[...Array(loopCol)].map((_, index) => (
-                        <Skeleton key={index} className={`flex-1 h-${height}`} />
+                            <Skeleton key={index} className={`flex-1 h-${height}`} />
                         ))}
                     </div>
                 ))}
@@ -112,4 +112,41 @@ function SkeletonBatikForm() {
     );
 }
 
-export { SkeletonChartPie, SkeletonTable, SkeletonChartArea, SkeletonBatikForm };
+function SkeletonProfileForm({ message = null }) {
+    return (
+        <>
+            {message && <div className="text-red-500 text-center">{message}</div>}
+            <Card className="w-full max-w-4xl mx-auto">
+                <CardHeader className="pb-0">
+                    <Skeleton className="w-48 h-6 mx-auto" />
+                </CardHeader>
+                <div className="border-b border-gray-200 w-full my-4" />
+                <CardContent>
+                    <div className="flex flex-col md:flex-row gap-8">
+                        <div className="w-full md:w-1/3 flex flex-col items-center justify-center space-y-6">
+                            <Skeleton className="w-56 h-56 rounded-full" />
+                            <Skeleton className="w-32 h-10" />
+                        </div>
+                        <div className="w-full md:w-2/3 space-y-6">
+                            <div className="flex items-center gap-6 space-x-2">
+                                <Skeleton className="w-6 h-6" />
+                                <Skeleton className="w-32 h-6" />
+                                <Skeleton className="w-6 h-6" />
+                                <Skeleton className="w-48 h-6" />
+                            </div>
+                            <Skeleton className="w-full h-10" />
+                            <Skeleton className="w-full h-10" />
+                            <Skeleton className="w-full h-10" />
+                            <Skeleton className="w-full h-10" />
+                            <Skeleton className="w-full h-10" />
+                            <Skeleton className="w-full h-10" />
+                            <Skeleton className="w-full h-10" />
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </>
+    );
+}
+
+export { SkeletonChartPie, SkeletonTable, SkeletonChartArea, SkeletonBatikForm, SkeletonProfileForm };

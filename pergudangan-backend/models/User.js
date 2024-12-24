@@ -18,7 +18,7 @@ class User {
     }
 
     static findById(id, callback) {
-        const query = 'SELECT id, username, role, email, img FROM users WHERE id = ?';
+        const query = 'SELECT id, username, role, email, img, password FROM users WHERE id = ?';
         db.query(query, [id], callback);
     }
 
@@ -41,6 +41,11 @@ class User {
     static delete(id, callback) {
         const query = 'DELETE FROM users WHERE id = ?';
         db.query(query, [id], callback);
+    }
+    static updateUserWithPassword(id, data, callback) {
+        const { username, role, email, password, img } = data;
+        const query = 'UPDATE users SET username = ?, role = ?, email = ?, password = ?, img = ? WHERE id = ?';
+        db.query(query, [username, role, email, password, img, id], callback);
     }
 }
 

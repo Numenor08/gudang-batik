@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
+import useSWR, { mutate } from 'swr';
 
 function AddSupplierDistriForm({type}) {
     const [name, setName] = useState('');
@@ -16,10 +17,25 @@ function AddSupplierDistriForm({type}) {
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const { data: suppliers} = useSWR(`/api/${type}`);
+
     const handleAddSupplier = async (event) => {
         event.preventDefault();
         setLoading(true);
+
+        const newSupplier = {
+            name,
+            contact_person: contactPerson,
+            phone,
+            email,
+            address,
+            img,
+        };
+
         try {
+            // Optimistically update the UI
+            mutate(`/api/${type}`, [...suppliers, newSupplier], false);
+
             const formData = new FormData();
             formData.append('name', name);
             formData.append('contact_person', contactPerson);
@@ -27,13 +43,13 @@ function AddSupplierDistriForm({type}) {
             formData.append('email', email);
             formData.append('address', address);
             formData.append('img', img);
-            console.log('formData:', ...formData);
 
             const response = await axiosInstance.post(`/api/${type}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             });
+
             setSuccessMessage(response.data.message);
             setErrorMessage('');
             setLoading(false);
@@ -42,11 +58,18 @@ function AddSupplierDistriForm({type}) {
             setPhone('');
             setEmail('');
             setAddress('');
+            setImg(null);
+
+            // Revalidate the data
+            mutate(`/api/${type}`);
         } catch (error) {
             console.error('Register error:', error);
             setErrorMessage(error.response?.data?.message || 'Failed to add supplier. Please try again.');
             setSuccessMessage('');
             setLoading(false);
+
+            // Rollback the optimistic update
+            mutate(`/api/${type}`, suppliers, false);
         }
     };
 

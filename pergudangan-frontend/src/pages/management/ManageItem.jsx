@@ -1,6 +1,5 @@
 import { useEffect, Suspense } from "react";
 import { useUrl } from '@/hooks/UrlProvider';
-import { useAuth } from "@/hooks/AuthProvider";
 import {DataTableBatik2, DataTableError} from "@/components/MyDataTables";
 import {AddItemButton} from "@/components/AddItemButton";
 import axiosInstance from "@/utils/axiosInstance";
@@ -12,7 +11,6 @@ import { batikColumns } from "@/components/Columns";
 function ManageItem({className}) {
     const urlHere = "/dashboard/management/item";
     const { setUrl } = useUrl();
-    const { token } = useAuth();
 
     useEffect(() => {
         setUrl(urlHere);
@@ -21,11 +19,7 @@ function ManageItem({className}) {
     const handleDelete = async (id) => {
         if (window.confirm("Apakah Anda yakin ingin menghapus barang ini?")) {
             try {
-                await axiosInstance.delete(`/api/batik/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                await axiosInstance.delete(`/api/batik/${id}`);
                 // Refresh data or navigate to another page
             } catch (error) {
                 console.error('Gagal menghapus barang:', error);

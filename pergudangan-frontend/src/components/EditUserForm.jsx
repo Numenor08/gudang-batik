@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { mutate } from "swr";
 
 function EditUserForm({ user, onClose }) {
     const [id] = useState(user.id);
@@ -18,31 +19,36 @@ function EditUserForm({ user, onClose }) {
     const handleEditUser = async (e) => {
         e.preventDefault();
         setLoading(true);
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('username', username);
+        formData.append('role', role.toLowerCase());
+        formData.append('email', email);
+        if (img instanceof File) {
+            formData.append('img', img);
+        }
+
+        // Optimistic UI update
+        const optimisticUser = { ...user, username, role: role.toLowerCase(), email, img };
+        mutate(`/api/auth/${user.id}`, optimisticUser, false);
+
         try {
-            const formData = new FormData();
-            formData.append('id', id);
-            formData.append('username', username);
-            formData.append('role', role.toLowerCase());
-            formData.append('email', email);
-            if (img instanceof File) {
-                formData.append('img', img);
-            }
-            console.log("Form Data: ", ...formData);
-            const response = await axiosInstance.put(`/api/auth/${user.id}`, formData, {
+            await axiosInstance.put(`/api/auth/${user.id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-            console.log("Response: ", response);
 
             setSuccessMessage('User updated successfully.');
             setErrorMessage('');
-            setLoading(false);
+            mutate(`/api/auth/${user.id}`); // Revalidate the data
             onClose();
         } catch (error) {
             console.error("Failed: ", error);
             setErrorMessage('Failed to update user.');
             setSuccessMessage('');
+            mutate(`/api/auth/${user.id}`, user, false); // Rollback to the original user data
+        } finally {
             setLoading(false);
         }
     };

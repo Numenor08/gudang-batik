@@ -1,5 +1,8 @@
 import MyBreadCrumb from "@/components/MyBreadCrumb";
 import ProfileForm from "@/components/ProfileForm";
+import { ErrorBoundary } from "react-error-boundary";
+import { Suspense } from "react";
+import { SkeletonProfileForm } from "@/components/skeleton/MySkeleton";
 
 function Profile() {
     return (
@@ -10,10 +13,14 @@ function Profile() {
                     { type: "page", path: "/dashboard/profile", label: "Profile" }]}
             />
             <div className="m-8 flex flex-col gap-8">
-                <ProfileForm />
+                <ErrorBoundary fallback={<SkeletonProfileForm message="Failed to fetch, please try again!" />}>
+                    <Suspense fallback={<SkeletonProfileForm />}>
+                        <ProfileForm />
+                    </Suspense>
+                </ErrorBoundary>
             </div>
         </>
     )
 }
 
-export default Profile
+export default Profile;

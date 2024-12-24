@@ -1,9 +1,9 @@
-// src/components/EditSupplierForm.jsx
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
+import { mutate } from 'swr';
 
 function EditSupplierDistriForm({ supplier, onClose, type }) {
     const [name, setName] = useState(supplier.name);
@@ -18,22 +18,28 @@ function EditSupplierDistriForm({ supplier, onClose, type }) {
     const handleEditSupplier = async (event) => {
         event.preventDefault();
         setLoading(true);
+        const formData = {
+            name,
+            contact_person: contactPerson,
+            phone,
+            email,
+            address,
+        };
+
+        // Optimistically update the local data
+        mutate(`/api/${type}/${supplier.id}`, { ...supplier, ...formData }, false);
+
         try {
-            const formData = {
-                name,
-                contact_person: contactPerson,
-                phone,
-                email,
-                address,
-            };
             await axiosInstance.put(`/api/${type}/${supplier.id}`, formData);
             setSuccessMessage('Supplier updated successfully.');
-            setLoading(false);
+            mutate(`/api/${type}/${supplier.id}`); // Revalidate the data
             onClose();
         } catch (error) {
             console.error('Register error:', error);
-            setErrorMessage(error.response?.data?.message || 'Failed to add supplier. Please try again.');
-            setErrorMessage('Failed to update supplier. Please try again.');
+            setErrorMessage(error.response?.data?.message || 'Failed to update supplier. Please try again.');
+            // Rollback the optimistic update
+            mutate(`/api/${type}/${supplier.id}`);
+        } finally {
             setLoading(false);
         }
     };

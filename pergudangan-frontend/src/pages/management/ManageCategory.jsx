@@ -7,7 +7,6 @@ import EditCategoryForm from "@/components/EditCategoryForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/utils/axiosInstance";
-import { useAuth } from "@/hooks/AuthProvider";
 import { SkeletonTable } from "@/components/skeleton/MySkeleton";
 import { ErrorBoundary } from "react-error-boundary";
 import { categoryColumns } from "@/components/Columns";
@@ -16,7 +15,6 @@ const ManageCategory = ({ className }) => {
     const urlHere = "/dashboard/management/category";
     const { setUrl } = useUrl();
     const [selectedCategory, setSelectedCategory] = useState(null);
-    const { token } = useAuth();
 
     useEffect(() => {
         setUrl(urlHere);
@@ -29,11 +27,7 @@ const ManageCategory = ({ className }) => {
     const handleDelete = async (id) => {
         if (window.confirm("Apakah Anda yakin ingin menghapus kategori ini?")) {
             try {
-                await axiosInstance.delete(`/api/categories/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                await axiosInstance.delete(`/api/categories/${id}`);
                 // Refresh data or handle delete logic
             } catch (error) {
                 console.error('Gagal menghapus kategori:', error);
