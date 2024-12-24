@@ -4,7 +4,6 @@ import { DataTableUser, DataTableError } from "@/components/MyDataTables";
 import EditUserForm from "@/components/EditUserForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import axiosInstance from "@/utils/axiosInstance";
-import { useAuth } from "@/hooks/AuthProvider";
 import MyBreadCrumb from "@/components/MyBreadCrumb";
 import { SkeletonTable } from "@/components/skeleton/MySkeleton";
 import { ErrorBoundary } from "react-error-boundary";
@@ -13,7 +12,6 @@ function ManageUser({ className }) {
     const urlHere = "/dashboard/management/user";
     const { setUrl } = useUrl();
     const [selectedUser, setSelectedUser] = useState(null);
-    const {  userId } = useAuth();
 
     useEffect(() => {
         setUrl(urlHere);
