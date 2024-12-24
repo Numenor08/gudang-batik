@@ -11,7 +11,9 @@ Ini adalah proyek akhir untuk kelas "Pemrograman Framework" tahun 2024.
 ### Frontend
 - **React.js**: Sebagai library untuk membangun user interface.
 
-## Setup Database dan Environment
+## Langkah-langkah menjalankan project
+
+### Setup Database dan Environment
 
 1. **Nyalakan Database MySQL**  
    Pastikan MySQL Anda sudah berjalan di komputer lokal atau server yang sesuai.
